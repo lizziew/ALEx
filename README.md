@@ -1,4 +1,4 @@
 ALEx
 ====
 
-An AI agent 
+An AI agent.  
