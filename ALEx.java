@@ -1,3 +1,7 @@
+import java.util.*; 
+import java.util.ArrayList;
+import java.io.*; 
+
 public class ALEx{
 	private int x;
 	private int y; 
