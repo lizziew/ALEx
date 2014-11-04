@@ -48,6 +48,13 @@ public class Item {
 		isCarried = b;
 		return true; 
 	}
-
+	public boolean equals(Item thing)
+	{
+		if (!color.equals(thing.getColor()))
+			return false;
+		if (!shape.equals(thing.getShape()))
+			return false;
+		return true;
+	}
 
 }
