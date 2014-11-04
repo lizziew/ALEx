@@ -28,7 +28,10 @@ public class ALEx{
 		if(i != -1) {
 			items.get(i).setCarried(false); 
 			items.remove(i); 
+			return true; 
 		}
+
+		return false; 
 	}
 
 	public boolean lookForItem(Item item) { //look for an item in environment 
