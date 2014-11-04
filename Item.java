@@ -14,4 +14,40 @@ public class Item {
 	public static void main(String[] args) {
 
 	}
+
+	public String getColor()
+	{
+		return color;
+	}
+	public String getShape()
+	{
+		return shape;
+	}	
+	public int getX()
+	{
+		return x;
+	}
+
+	public int getY()
+	{
+		return y;
+	}
+
+	public boolean setX(int a)
+	{
+		x = a;
+		return true;
+	} 
+	public boolean setY(int b)
+	{
+		y = b;
+		return true;
+	}
+	public boolean setCarried(boolean b)
+	{
+		isCarried = b;
+		return true; 
+	}
+
+
 }
