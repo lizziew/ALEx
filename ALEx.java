@@ -15,9 +15,27 @@ public class ALEx{
 
 		for(int i = 0; i < Math.abs(this.x-x); i++) {
 			this.x += dx; 
-			Thread.sleep(1000); 
+			try {
+			    Thread.sleep(1000);                
+			} catch(InterruptedException ex) {
+			    Thread.currentThread().interrupt();
+			}
 			for(int j = 0; j < items.size(); j++) 
 				items.get(j).setX(this.x);
+		}
+
+		int dy = -1; 
+		if(this.y < y) dy = 1; 
+
+		for(int i = 0; i < Math.abs(this.y-y); i++) {
+			this.y += dy; 
+			try {
+			    Thread.sleep(1000);                 
+			} catch(InterruptedException ex) {
+			    Thread.currentThread().interrupt();
+			}
+			for(int j = 0; j < items.size(); j++) 
+				items.get(j).setY(this.y);
 		}
 
 		return true; 
