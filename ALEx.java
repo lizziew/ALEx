@@ -5,6 +5,7 @@ import java.io.*;
 public class ALEx{
 	private int x;
 	private int y; 
+	private Environment world; 
 
 	private ArrayList<Item> items = new ArrayList<Item>();
 
@@ -44,6 +45,14 @@ public class ALEx{
 				return i; 
 			
 		return -1; 
+	}
+
+	public int getX(int x) {
+		return x;
+	}
+
+	public int getY(int y) {
+		return y; 
 	}
 
 	public static void main(String[] args) {
