@@ -8,7 +8,10 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -29,6 +32,11 @@ public class ALExGUI {
 	JTextArea record; 
 	JTextField input;
 	JPanel righthalf;
+	int ALExx = 2;
+	int ALExy = 3;
+	BufferedImage img; 
+	int columnwidth;
+	
 	
 	int dimensions = 6; 
 	
@@ -38,11 +46,20 @@ public class ALExGUI {
 
 	public ALExGUI() {
 		
+		try {
+		    img = ImageIO.read(new File("sprite.png"));
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+		
 		JFrame frame = new JFrame("ALEx - Artificial Linguistic Executor");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
 		
 		righthalf = new JPanel();
+		
+		columnwidth = Math.round((float)500/(float)dimensions);
+		
 		grid = new GraphicsPanel();
 		grid.setPreferredSize(new Dimension(500,500));
 		grid.setMaximumSize(new Dimension(500,500));
@@ -78,13 +95,10 @@ public class ALExGUI {
 	private class GraphicsPanel extends JPanel {
 		BufferedImage graph;
 		Graphics graphdraw;
-		int columnwidth;
 		
 		public GraphicsPanel() {
 			graph = new BufferedImage(502, 502, BufferedImage.TYPE_INT_ARGB); 
 			graphdraw = graph.createGraphics(); 
-			columnwidth = Math.round((float)500/(float)dimensions);
-			System.out.println(columnwidth);
 		}
 
 		//Update is called by the TimerHandler when the timer updates.
@@ -105,11 +119,11 @@ public class ALExGUI {
 			for(int i=0; i<=dimensions;i++){
 				graphdraw.drawLine(0, i*columnwidth, 500, i*columnwidth);
 			}
+
+			graphdraw.drawImage(img, ALExx*columnwidth, ALExy*columnwidth, columnwidth, columnwidth, null);
 			
 			g.drawImage(graph, 0, 0, null);
 		}
-
-
 	}	
 
 	
