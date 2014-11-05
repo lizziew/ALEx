@@ -19,7 +19,9 @@ public class ALEx{
 		int dx = -1; 
 		if(this.x < x) dx = 1; 
 
-		for(int i = 0; i < Math.abs(this.x-x); i++) {
+		int DX = Math.abs(this.x-x)-1; 
+
+		for(int i = 0; i < DX; i++) {
 			this.x += dx; 
 			try {
 			    Thread.sleep(1000);                
@@ -33,9 +35,9 @@ public class ALEx{
 
 		int dy = -1; 
 		if(this.y < y) dy = 1; 
+		int DY = Math.abs(this.y-y)-1; 
 
-		for(int i = 0; i < Math.abs(this.y-y); i++) {
-			System.out.println(i); 
+		for(int i = 0; i < DY; i++) {
 			this.y += dy; 
 			try {
 			    Thread.sleep(1000);                 
@@ -92,6 +94,6 @@ public class ALEx{
 	public static void main(String[] args) {
 		ALEx testbot = new ALEx(); 
 		System.out.println(testbot.getX() + " " + testbot.getY());
-		testbot.moveTo(3, 5);
+		testbot.moveTo(5, 10);
 	}
 }
