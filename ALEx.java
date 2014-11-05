@@ -47,12 +47,12 @@ public class ALEx{
 		return -1; 
 	}
 
-	public int getX(int x) {
-		return x;
+	public int getX() {
+		return this.x;
 	}
 
-	public int getY(int y) {
-		return y; 
+	public int getY() {
+		return this.y; 
 	}
 
 	public static void main(String[] args) {
