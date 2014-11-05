@@ -36,15 +36,17 @@ public class ALExGUI {
 	int ALExy = 3;
 	BufferedImage img; 
 	int columnwidth;
+	ALEx alex; 
 	
-	
-	int dimensions = 6; 
+	int dimensions = 8; 
 	
 	public static void main(String[] args) {
 		ALExGUI letsgo = new ALExGUI();
 	}
 
 	public ALExGUI() {
+		
+		alex = new ALEx();
 		
 		try {
 		    img = ImageIO.read(new File("sprite.png"));
@@ -107,6 +109,9 @@ public class ALExGUI {
 		}
 		
 		public void paintComponent(Graphics g) {
+			
+			ALExx = alex.getX();
+			ALExy = alex.getY();
 			
 			graphdraw.setColor(Color.white);
 			graphdraw.fillRect(0, 0, 500, 500);
