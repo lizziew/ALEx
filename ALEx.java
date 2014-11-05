@@ -9,6 +9,12 @@ public class ALEx{
 
 	private ArrayList<Item> items = new ArrayList<Item>();
 
+	public ALEx () {
+		x = 0;
+		y = 0; 
+		world = new Environment(); 
+	}
+
 	public boolean moveTo(int x, int y) { //move ALEx to position x, y 
 		int dx = -1; 
 		if(this.x < x) dx = 1; 
@@ -22,12 +28,14 @@ public class ALEx{
 			}
 			for(int j = 0; j < items.size(); j++) 
 				items.get(j).setX(this.x);
+			System.out.println("ALEx is at " + this.x + " " + this.y);
 		}
 
 		int dy = -1; 
 		if(this.y < y) dy = 1; 
 
 		for(int i = 0; i < Math.abs(this.y-y); i++) {
+			System.out.println(i); 
 			this.y += dy; 
 			try {
 			    Thread.sleep(1000);                 
@@ -36,6 +44,7 @@ public class ALEx{
 			}
 			for(int j = 0; j < items.size(); j++) 
 				items.get(j).setY(this.y);
+			System.out.println("ALEx is at " + this.x + " " + this.y);
 		}
 
 		return true; 
@@ -81,6 +90,8 @@ public class ALEx{
 	}
 
 	public static void main(String[] args) {
-
+		ALEx testbot = new ALEx(); 
+		System.out.println(testbot.getX() + " " + testbot.getY());
+		testbot.moveTo(3, 5);
 	}
 }
