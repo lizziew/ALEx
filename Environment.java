@@ -1,10 +1,15 @@
 
 public class Environment {
 
-	int dimensions; 
+	int dimensions = 5; 
 	Item[][] stuff;
 
 	public Environment(){
+		stuff = new Item[dimensions][dimensions];
+	}
+	
+	public Environment(int dimen){
+		dimensions = dimen;
 		stuff = new Item[dimensions][dimensions];
 	}
 	
@@ -20,6 +25,10 @@ public class Environment {
 	
 	public void addItem(int x, int y,Item it){
 		stuff[x][y] = it;
+	}
+	
+	public Item[][] getStuff(){
+		return stuff;
 	}
 	
 }

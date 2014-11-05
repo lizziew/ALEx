@@ -38,7 +38,7 @@ public class ALExGUI {
 	int columnwidth;
 	ALEx alex; 
 	
-	int dimensions = 8; 
+	int dimensions = 5; 
 	
 	public static void main(String[] args) {
 		ALExGUI letsgo = new ALExGUI();
@@ -91,6 +91,8 @@ public class ALExGUI {
 		//Show the frame
 		frame.setSize(700, 700);
 		frame.setVisible(true);
+		
+		alex.moveTo(3,3);
 	}
 	
 	
@@ -125,6 +127,16 @@ public class ALExGUI {
 				graphdraw.drawLine(0, i*columnwidth, 500, i*columnwidth);
 			}
 
+			Item[][] stuffs = alex.getEnviron().getStuff();
+			
+			for (int i = 0; i<dimensions; i++){
+				for (int j = 0; j<dimensions; j++){
+					if (stuffs[i][j] != null){
+						
+					}
+				}
+			}
+	
 			graphdraw.drawImage(img, ALExx*columnwidth, ALExy*columnwidth, columnwidth, columnwidth, null);
 			
 			g.drawImage(graph, 0, 0, null);
