@@ -19,7 +19,7 @@ public class ALEx{
 		int dx = -1; 
 		if(this.x < x) dx = 1; 
 
-		int DX = Math.abs(this.x-x)-1; 
+		int DX = Math.abs(this.x-x); 
 
 		for(int i = 0; i < DX; i++) {
 			this.x += dx; 
@@ -35,7 +35,7 @@ public class ALEx{
 
 		int dy = -1; 
 		if(this.y < y) dy = 1; 
-		int DY = Math.abs(this.y-y)-1; 
+		int DY = Math.abs(this.y-y); 
 
 		for(int i = 0; i < DY; i++) {
 			this.y += dy; 
