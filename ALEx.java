@@ -1,5 +1,5 @@
 import java.util.*; 
-import java.util.ArrayList;
+import java.lang.*;
 import java.io.*; 
 
 public class ALEx{
@@ -10,13 +10,16 @@ public class ALEx{
 	private ArrayList<Item> items = new ArrayList<Item>();
 
 	public boolean moveTo(int x, int y) { //move ALEx to position x, y 
-		this.x = x;
-		this.y = y; 
+		int dx = -1; 
+		if(this.x < x) dx = 1; 
 
-		for(int i = 0; i < items.size(); i++) {
-			items.get(i).setX(this.x);
-			items.get(i).setY(this.y); 
+		for(int i = 0; i < Math.abs(this.x-x); i++) {
+			this.x += dx; 
+			Thread.sleep(1000); 
+			for(int j = 0; j < items.size(); j++) 
+				items.get(j).setX(this.x);
 		}
+
 		return true; 
 	}
 
@@ -53,6 +56,10 @@ public class ALEx{
 
 	public int getY() {
 		return this.y; 
+	}
+
+	public Environment getEnviron() {
+		return this.world; 
 	}
 
 	public static void main(String[] args) {
