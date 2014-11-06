@@ -11,8 +11,13 @@ public class Item {
 	private String shape; 
 	//private boolean edibility, heaviness; 	
 
-	public static void main(String[] args) {
-
+	public Item(int a, int b, String c, String s)
+	{
+		x = a;
+		y = b;
+		isCarried = false;
+		color = c;
+		shape = s;
 	}
 
 	public String getColor()
