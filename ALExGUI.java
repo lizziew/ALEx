@@ -94,7 +94,10 @@ public class ALExGUI {
 		frame.setSize(700, 700);
 		frame.setVisible(true);
 		
+		alex.getEnviron().addItem(2,2,new Item(2,2,"red", "square"));
+		alex.getEnviron().addItem(4,2,new Item(4,2,"blue", "square"));
 		alex.moveTo(3,3);
+		
 	}
 	
 	
@@ -135,6 +138,15 @@ public class ALExGUI {
 				for (int j = 0; j<dimensions; j++){
 					if (stuffs[i][j] != null){
 						
+						if(stuffs[i][j].getColor().equals("red")){
+							graphdraw.setColor(Color.red);
+						}else if(stuffs[i][j].getColor().equals("blue")){
+							graphdraw.setColor(Color.blue);
+						}
+						
+						if(stuffs[i][j].getShape().equals("square")){
+							graphdraw.fillRect(columnwidth*i + columnwidth/4, columnwidth*j + columnwidth/4, columnwidth/2, columnwidth/2);
+						}
 					}
 				}
 			}
