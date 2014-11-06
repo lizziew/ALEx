@@ -1,12 +1,18 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -25,8 +31,14 @@ public class ALExGUI {
 	GraphicsPanel grid;
 	JTextArea record; 
 	JTextField input;
-	JPanel righthalf; 
-	int dimensions = 6; 
+	JPanel righthalf;
+	int ALExx = 2;
+	int ALExy = 3;
+	BufferedImage img; 
+	int columnwidth;
+	ALEx alex; 
+	
+	int dimensions; 
 	
 	public static void main(String[] args) {
 		ALExGUI letsgo = new ALExGUI();
@@ -34,15 +46,33 @@ public class ALExGUI {
 
 	public ALExGUI() {
 		
+		dimensions = 5;
+		
+		alex = new ALEx(dimensions);
+		
+		try {
+		    img = ImageIO.read(new File("sprite.png"));
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+		
 		JFrame frame = new JFrame("ALEx - Artificial Linguistic Executor");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new BorderLayout());
+		frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
 		
 		righthalf = new JPanel();
-		grid = new GraphicsPanel();
 		
-		frame.add(grid, BorderLayout.CENTER);
-		frame.add(righthalf, BorderLayout.EAST);
+		columnwidth = Math.round((float)500/(float)dimensions);
+		
+		grid = new GraphicsPanel();
+		grid.setPreferredSize(new Dimension(500,500));
+		grid.setMaximumSize(new Dimension(500,500));
+		grid.setAlignmentX((float)0.5);
+		grid.setAlignmentY((float)0.5);
+		
+		frame.add(grid);
+		Box.createRigidArea(new Dimension(0,5));
+		frame.add(righthalf);
 		
 		righthalf.setLayout(new BorderLayout());
 		
@@ -55,27 +85,26 @@ public class ALExGUI {
 		righthalf.add(scrollPane, BorderLayout.CENTER);
 		
 		input = new JTextField("Input");
-		righthalf.add(input, BorderLayout.SOUTH);
+		righthalf.add(input, BorderLayout.PAGE_END);
 		
 		t= new Timer(25,new TimerHandler());
 		t.start(); 
 		
 		//Show the frame
-		frame.setSize(900, 700);
+		frame.setSize(700, 700);
 		frame.setVisible(true);
+		
+		alex.moveTo(3,3);
 	}
 	
 	
 	private class GraphicsPanel extends JPanel {
 		BufferedImage graph;
 		Graphics graphdraw;
-		int columnwidth;
 		
 		public GraphicsPanel() {
-			graph = new BufferedImage(550, 550, BufferedImage.TYPE_INT_ARGB); 
+			graph = new BufferedImage(502, 502, BufferedImage.TYPE_INT_ARGB); 
 			graphdraw = graph.createGraphics(); 
-			columnwidth = Math.round((float)500/(float)dimensions);
-			System.out.println(columnwidth);
 		}
 
 		//Update is called by the TimerHandler when the timer updates.
@@ -84,21 +113,36 @@ public class ALExGUI {
 		}
 		
 		public void paintComponent(Graphics g) {
-			graphdraw.setColor(Color.black);
 			
-			for(int i=1; i<=dimensions;i++){
+			ALExx = alex.getX();
+			ALExy = alex.getY();
+			
+			graphdraw.setColor(Color.white);
+			graphdraw.fillRect(0, 0, 500, 500);
+			
+			graphdraw.setColor(Color.black);
+			for(int i=0; i<=dimensions;i++){
 				graphdraw.drawLine(i*columnwidth, 0, i*columnwidth, 500);
 			}
 			
-			for(int i=1; i<=dimensions;i++){
+			for(int i=0; i<=dimensions;i++){
 				graphdraw.drawLine(0, i*columnwidth, 500, i*columnwidth);
 			}
+
+			Item[][] stuffs = alex.getEnviron().getStuff();
+			
+			for (int i = 0; i<dimensions; i++){
+				for (int j = 0; j<dimensions; j++){
+					if (stuffs[i][j] != null){
+						
+					}
+				}
+			}
+	
+			graphdraw.drawImage(img, ALExx*columnwidth, ALExy*columnwidth, columnwidth, columnwidth, null);
 			
 			g.drawImage(graph, 0, 0, null);
 		}
-
-		
-
 	}	
 
 	
