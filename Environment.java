@@ -4,9 +4,6 @@ public class Environment {
 	int dimensions = 5; 
 	Item[][] stuff;
 
-	public Environment(){
-		stuff = new Item[dimensions][dimensions];
-	}
 	
 	public Environment(int dimen){
 		dimensions = dimen;
@@ -14,7 +11,7 @@ public class Environment {
 	}
 	
 	public Environment copy(){
-		Environment rtn = new Environment();
+		Environment rtn = new Environment(dimensions);
 		for (int i = 0; i<dimensions; i++){
 			for (int j = 0; j<dimensions; j++){
 				rtn.addItem(i,j,stuff[i][j]);

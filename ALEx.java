@@ -6,13 +6,14 @@ public class ALEx{
 	private int x;
 	private int y; 
 	private Environment world; 
+	private int dimension;
 
 	private ArrayList<Item> items = new ArrayList<Item>();
 
-	public ALEx () {
+	public ALEx (int dim) {
 		x = 0;
 		y = 0; 
-		world = new Environment(); 
+		world = new Environment(dim); 
 	}
 
 	public boolean moveTo(int x, int y) { //move ALEx to position x, y 
@@ -92,7 +93,7 @@ public class ALEx{
 	}
 
 	public static void main(String[] args) {
-		ALEx testbot = new ALEx(); 
+		ALEx testbot = new ALEx(15); 
 		System.out.println(testbot.getX() + " " + testbot.getY());
 		testbot.moveTo(5, 10);
 	}

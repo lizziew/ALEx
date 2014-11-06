@@ -38,7 +38,7 @@ public class ALExGUI {
 	int columnwidth;
 	ALEx alex; 
 	
-	int dimensions = 5; 
+	int dimensions; 
 	
 	public static void main(String[] args) {
 		ALExGUI letsgo = new ALExGUI();
@@ -46,7 +46,9 @@ public class ALExGUI {
 
 	public ALExGUI() {
 		
-		alex = new ALEx();
+		dimensions = 5;
+		
+		alex = new ALEx(dimensions);
 		
 		try {
 		    img = ImageIO.read(new File("sprite.png"));
