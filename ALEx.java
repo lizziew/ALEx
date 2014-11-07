@@ -16,21 +16,19 @@ public class ALEx{
 		world = new Environment(dim); 
 	}
 
-	public boolean moveTo(int x, int y) { //move ALEx to position x, y 
+	public ArrayList<Move> moveTo(int x, int y) { //move ALEx to position x, y 
 		int dx = -1; 
 		if(this.x < x) dx = 1; 
 
 		int DX = Math.abs(this.x-x); 
 
+		ArrayList<Move> moves = new ArrayList<Move>(); 
+
 		for(int i = 0; i < DX; i++) {
 			this.x += dx; 
-			try {
-			    Thread.sleep(1000);                
-			} catch(InterruptedException ex) {
-			    Thread.currentThread().interrupt();
-			}
 			for(int j = 0; j < items.size(); j++) 
 				items.get(j).setX(this.x);
+			moves.add(new Move(this.x, this.y)); 
 		}
 
 		int dy = -1; 
@@ -39,16 +37,12 @@ public class ALEx{
 
 		for(int i = 0; i < DY; i++) {
 			this.y += dy; 
-			try {
-			    Thread.sleep(1000);                 
-			} catch(InterruptedException ex) {
-			    Thread.currentThread().interrupt();
-			}
 			for(int j = 0; j < items.size(); j++) 
 				items.get(j).setY(this.y);
+			moves.add(new Move(this.x, this.y)); 
 		}
 
-		return true; 
+		return moves; 
 	}
 
 	public boolean pickUp(int x, int y) { //pick up item in environment 
@@ -109,5 +103,13 @@ public class ALEx{
 
 	public Environment getEnviron() {
 		return this.world; 
+	}
+
+	public static void main(String[] args) {
+		ALEx testbot = new ALEx(10); 
+		ArrayList<Move> moves = testbot.moveTo(4, 4); 
+		for(int i = 0; i < moves.size(); i++) {
+			System.out.println("moving to " + moves.get(i).getL() + " " + moves.get(i).getR());
+		}
 	}
 }
