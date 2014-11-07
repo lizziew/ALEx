@@ -59,7 +59,11 @@ public class ALEx{
 		int i = hasItem(item); 
 		if(i != -1) {
 			items.get(i).setCarried(false); 
-			this.world.stuff[this.x][this.y] = items.get(i);  
+			if(this.world.stuff[this.x][this.y] != null) {
+				System.out.println("ERROR: item already at " + this.x + ", " + this.y + ".");
+				return false; 
+			}
+			this.world.addItem(this.x, this.y, items.get(i));
 			items.remove(i);
 			return true; 
 		}
