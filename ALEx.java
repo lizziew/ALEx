@@ -99,6 +99,14 @@ public class ALEx{
 		return this.y; 
 	}
 
+	public ArrayList<Item> getBackpack() {
+		return this.items; 
+	}
+
+	public Item getItem(int i) {
+		return this.items.get(i); 
+	}
+
 	public Environment getEnviron() {
 		return this.world; 
 	}
