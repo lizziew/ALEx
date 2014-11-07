@@ -7,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -37,6 +40,7 @@ public class ALExGUI {
 	BufferedImage img; 
 	int columnwidth;
 	ALEx alex; 
+	JButton go;
 	BufferedImage [][] itemsprites = new BufferedImage[5][11];
 	
 	int dimensions; 
@@ -146,8 +150,18 @@ public class ALExGUI {
 		
 		righthalf.add(scrollPane, BorderLayout.CENTER);
 		
+		JPanel inputandgo = new JPanel();
+		righthalf.add(inputandgo, BorderLayout.PAGE_END);
+		
+		inputandgo.setLayout(new BorderLayout());
+		
+		
 		input = new JTextField("Input");
-		righthalf.add(input, BorderLayout.PAGE_END);
+		inputandgo.add(input, BorderLayout.CENTER);
+		
+		go = new JButton("GO");
+		go.addMouseListener(new MouseHandler());
+		inputandgo.add(go, BorderLayout.LINE_END);
 		
 		t= new Timer(25,new TimerHandler());
 		t.start(); 
@@ -253,6 +267,59 @@ public class ALExGUI {
 		}
 	}	
 
+	
+	private class MouseHandler implements MouseListener{
+		public void mouseClicked(MouseEvent e){
+			if (e.getSource().equals(go)){
+				String inputtext = input.getText();
+				System.out.println("inputtext" + inputtext);
+				input.setText("");
+				if (inputtext.contains("move")){
+					inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
+					System.out.println("substring" + inputtext);
+					int x = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
+					System.out.println("x" + x);
+					int y = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
+					System.out.println("y" + y);
+					alex.moveTo(x,y);
+				}else if(inputtext.contains("pick up")){
+					inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
+					inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
+					int x = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
+					int y = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
+					alex.pickUp(x, y);
+				}else if(inputtext.contains("put down")){
+					if (alex.getBackpack().size() != 0){
+						alex.putDown(alex.getItem(0));
+					}
+				}
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
 	
 	//All the timerhandler does is call piebar's update() method. 
 	private class TimerHandler implements ActionListener {
