@@ -37,6 +37,7 @@ public class ALExGUI {
 	BufferedImage img; 
 	int columnwidth;
 	ALEx alex; 
+	BufferedImage [][] itemsprites = new BufferedImage[5][11];
 	
 	int dimensions; 
 	
@@ -52,6 +53,67 @@ public class ALExGUI {
 		
 		try {
 		    img = ImageIO.read(new File("sprite.png"));
+		    
+		    itemsprites[0][0] = ImageIO.read(new File("item sprites/circle-red.png"));
+		    itemsprites[0][1] = ImageIO.read(new File("item sprites/circle-orange.png"));
+		    itemsprites[0][2] = ImageIO.read(new File("item sprites/circle-yellow.png"));
+ 		    itemsprites[0][3] = ImageIO.read(new File("item sprites/circle-green.png"));
+ 		    itemsprites[0][4] = ImageIO.read(new File("item sprites/circle-blue.png"));
+ 		    itemsprites[0][5] = ImageIO.read(new File("item sprites/circle-lightblue.png"));
+ 		    itemsprites[0][6] = ImageIO.read(new File("item sprites/circle-purple.png"));
+ 		    itemsprites[0][7] = ImageIO.read(new File("item sprites/circle-pink.png"));
+ 		    itemsprites[0][8] = ImageIO.read(new File("item sprites/circle-brown.png"));
+ 		    itemsprites[0][9] = ImageIO.read(new File("item sprites/circle-gray.png"));
+ 		    itemsprites[0][10] =  ImageIO.read(new File("item sprites/circle-black.png"));
+ 		    
+		    itemsprites[1][0] = ImageIO.read(new File("item sprites/moon-red.png"));
+		    itemsprites[1][1] = ImageIO.read(new File("item sprites/moon-orange.png"));
+		    itemsprites[1][2] = ImageIO.read(new File("item sprites/moon-yellow.png"));
+ 		    itemsprites[1][3] = ImageIO.read(new File("item sprites/moon-green.png"));
+ 		    itemsprites[1][4] = ImageIO.read(new File("item sprites/moon-blue.png"));
+ 		    itemsprites[1][5] = ImageIO.read(new File("item sprites/moon-lightblue.png"));
+ 		    itemsprites[1][6] = ImageIO.read(new File("item sprites/moon-purple.png"));
+ 		    itemsprites[1][7] = ImageIO.read(new File("item sprites/moon-pink.png"));
+ 		    itemsprites[1][8] = ImageIO.read(new File("item sprites/moon-brown.png"));
+ 		    itemsprites[1][9] = ImageIO.read(new File("item sprites/moon-gray.png"));
+ 		    itemsprites[1][10] =  ImageIO.read(new File("item sprites/moon-black.png"));  
+ 		    
+		    itemsprites[2][0] = ImageIO.read(new File("item sprites/square-red.png"));
+		    itemsprites[2][1] = ImageIO.read(new File("item sprites/square-orange.png"));
+		    itemsprites[2][2] = ImageIO.read(new File("item sprites/square-yellow.png"));
+ 		    itemsprites[2][3] = ImageIO.read(new File("item sprites/square-green.png"));
+ 		    itemsprites[2][4] = ImageIO.read(new File("item sprites/square-blue.png"));
+ 		    itemsprites[2][5] = ImageIO.read(new File("item sprites/square-lightblue.png"));
+ 		    itemsprites[2][6] = ImageIO.read(new File("item sprites/square-purple.png"));
+ 		    itemsprites[2][7] = ImageIO.read(new File("item sprites/square-pink.png"));
+ 		    itemsprites[2][8] = ImageIO.read(new File("item sprites/square-brown.png"));
+ 		    itemsprites[2][9] = ImageIO.read(new File("item sprites/square-gray.png"));
+ 		    itemsprites[2][10] =  ImageIO.read(new File("item sprites/square-black.png"));  
+		
+		    itemsprites[3][0] = ImageIO.read(new File("item sprites/star-red.png"));
+		    itemsprites[3][1] = ImageIO.read(new File("item sprites/star-orange.png"));
+		    itemsprites[3][2] = ImageIO.read(new File("item sprites/star-yellow.png"));
+ 		    itemsprites[3][3] = ImageIO.read(new File("item sprites/star-green.png"));
+ 		    itemsprites[3][4] = ImageIO.read(new File("item sprites/star-blue.png"));
+ 		    itemsprites[3][5] = ImageIO.read(new File("item sprites/star-lightblue.png"));
+ 		    itemsprites[3][6] = ImageIO.read(new File("item sprites/star-purple.png"));
+ 		    itemsprites[3][7] = ImageIO.read(new File("item sprites/star-pink.png"));
+ 		    itemsprites[3][8] = ImageIO.read(new File("item sprites/star-brown.png"));
+ 		    itemsprites[3][9] = ImageIO.read(new File("item sprites/star-gray.png"));
+ 		    itemsprites[3][10] =  ImageIO.read(new File("item sprites/star-black.png"));  
+ 		    
+		    itemsprites[4][0] = ImageIO.read(new File("item sprites/triangle-red.png"));
+		    itemsprites[4][1] = ImageIO.read(new File("item sprites/triangle-orange.png"));
+		    itemsprites[4][2] = ImageIO.read(new File("item sprites/triangle-yellow.png"));
+ 		    itemsprites[4][3] = ImageIO.read(new File("item sprites/triangle-green.png"));
+ 		    itemsprites[4][4] = ImageIO.read(new File("item sprites/triangle-blue.png"));
+ 		    itemsprites[4][5] = ImageIO.read(new File("item sprites/triangle-lightblue.png"));
+ 		    itemsprites[4][6] = ImageIO.read(new File("item sprites/triangle-purple.png"));
+ 		    itemsprites[4][7] = ImageIO.read(new File("item sprites/triangle-pink.png"));
+ 		    itemsprites[4][8] = ImageIO.read(new File("item sprites/triangle-brown.png"));
+ 		    itemsprites[4][9] = ImageIO.read(new File("item sprites/triangle-gray.png"));
+ 		    itemsprites[4][10] =  ImageIO.read(new File("item sprites/triangle-black.png"));
+ 		    
 		} catch (IOException e) {
 			System.out.println(e);
 		}
@@ -136,18 +198,52 @@ public class ALExGUI {
 			
 			for (int i = 0; i<dimensions; i++){
 				for (int j = 0; j<dimensions; j++){
-					if (stuffs[i][j] != null){
+					
+					int color=0;
+					int shape=0;
+					
+					if (stuffs[i][j] != null){		
 						
 						if(stuffs[i][j].getColor().equals("red")){
-							graphdraw.setColor(Color.red);
+							color = 0;
+						}else if(stuffs[i][j].getColor().equals("orange")){
+							color = 1; 
+						}else if(stuffs[i][j].getColor().equals("yellow")){
+							color = 2; 
+						}else if(stuffs[i][j].getColor().equals("green")){
+							color = 3; 
 						}else if(stuffs[i][j].getColor().equals("blue")){
-							graphdraw.setColor(Color.blue);
+							color = 4; 
+						}else if(stuffs[i][j].getColor().equals("lightblue")){
+							color = 5; 
+						}else if(stuffs[i][j].getColor().equals("purple")){
+							color = 6; 
+						}else if(stuffs[i][j].getColor().equals("pink")){
+							color = 7; 
+						}else if(stuffs[i][j].getColor().equals("brown")){
+							color = 8; 
+						}else if(stuffs[i][j].getColor().equals("gray")){
+							color = 9; 
+						}else if(stuffs[i][j].getColor().equals("black")){
+							color = 10; 
 						}
 						
-						if(stuffs[i][j].getShape().equals("square")){
-							graphdraw.fillRect(columnwidth*i + columnwidth/4, columnwidth*j + columnwidth/4, columnwidth/2, columnwidth/2);
+						if(stuffs[i][j].getShape().equals("circle")){
+							shape = 0;
+						}else if(stuffs[i][j].getShape().equals("moon")){
+							shape = 1;
+						}else if(stuffs[i][j].getShape().equals("square")){
+							shape = 2;
+						}else if(stuffs[i][j].getShape().equals("star")){
+							shape = 3;
+						}else if(stuffs[i][j].getShape().equals("triangle")){
+							shape = 4;
 						}
+						
+						graphdraw.drawImage(itemsprites[shape][color], i*columnwidth, j*columnwidth, columnwidth, columnwidth, null);
+					
 					}
+					
 				}
 			}
 	
