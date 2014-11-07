@@ -17,15 +17,15 @@ Aspects of Project:
   * Eat the banana
   * Go to the star
   * Tell me where it is
-A way to retain memory of what is being discussed from command to command so it can ask for and receive clarification
-Some problem-solving skills so it knows which information to request
-How to respond:
-	•	I have no idea what you just said... 
-	•	Which “blue thing?” 
-	•	(Gross! It’s not edible.) 
-	•	(It’s too heavy.) 
+* A way to retain memory of what is being discussed from command to command so it can ask for and receive clarification
+* Some problem-solving skills so it knows which information to request
+* How to respond:
+  * I have no idea what you just said...
+  * Which “blue thing?”
+  * (Gross! It’s not edible.)
+  * (It’s too heavy.)
+  
 Timeline for project:
-
 Goals, ranked from theoretically easiest to theoretically hardest.
 
 	•	GUI/world mechanics 
