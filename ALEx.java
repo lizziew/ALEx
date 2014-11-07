@@ -31,7 +31,6 @@ public class ALEx{
 			}
 			for(int j = 0; j < items.size(); j++) 
 				items.get(j).setX(this.x);
-			System.out.println("ALEx is at " + this.x + " " + this.y);
 		}
 
 		int dy = -1; 
@@ -47,7 +46,6 @@ public class ALEx{
 			}
 			for(int j = 0; j < items.size(); j++) 
 				items.get(j).setY(this.y);
-			System.out.println("ALEx is at " + this.x + " " + this.y);
 		}
 
 		return true; 
@@ -69,7 +67,12 @@ public class ALEx{
 		int i = hasItem(item); 
 		if(i != -1) {
 			items.get(i).setCarried(false); 
-			items.remove(i); 
+			if(this.world.stuff[this.x][this.y] != null) {
+				System.out.println("ERROR: item already at " + this.x + ", " + this.y + ".");
+				return false; 
+			}
+			this.world.addItem(this.x, this.y, items.get(i));
+			items.remove(i);
 			return true; 
 		}
 
@@ -98,11 +101,5 @@ public class ALEx{
 
 	public Environment getEnviron() {
 		return this.world; 
-	}
-
-	public static void main(String[] args) {
-		ALEx testbot = new ALEx(15); 
-		System.out.println(testbot.getX() + " " + testbot.getY());
-		testbot.moveTo(5, 10);
 	}
 }
