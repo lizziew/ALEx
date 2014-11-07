@@ -53,7 +53,15 @@ public class ALEx{
 		return true; 
 	}
 
-	public boolean pickUp(Item item) { //pick up item in environment 
+	public boolean pickUp(int x, int y) { //pick up item in environment 
+		moveTo(x,y);
+		if(world.stuff[x][y] == null)
+		{
+			System.out.println("There's nothing here!!!");
+			return false;
+		}
+		items.add(world.removeItem(x,y));
+		System.out.println("Got something!");	
 		return true; 
 	}
 

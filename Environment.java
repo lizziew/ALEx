@@ -23,6 +23,13 @@ public class Environment {
 	public void addItem(int x, int y,Item it){
 		stuff[x][y] = it;
 	}
+
+	public Item removeItem(int x, int y)
+	{
+		Item i = stuff[x][y];
+		stuff[x][y] = null;
+		return i;
+	}
 	
 	public Item[][] getStuff(){
 		return stuff;
