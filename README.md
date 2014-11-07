@@ -7,16 +7,16 @@ To make an agent in a top-down environment that can understand and execute comma
 
 Aspects of Project: 
 GUI: Representation of 2-D world containing ALEx the agent & objects with various qualities such as those listed below:
-	* color 
-	* shape 
-	* (heaviness/edibility - to add if we have time, they prevent certain actions) 
+* color
+* shape
+* (heaviness/edibility - to add if we have time, they prevent certain actions)
 Text input from users
 Language processing to understand commands - specifically sentence parsing and extracting meaning from commands like:
-	-	Move the blue triangle 
-	-	Move the blue thing to (1,1) 
-	-	Eat the banana 
-	-	Go to the star 
-	-	Tell me where it is 
+* Move the blue triangle
+* Move the blue thing to (1,1)
+* Eat the banana
+* Go to the star
+* Tell me where it is
 A way to retain memory of what is being discussed from command to command so it can ask for and receive clarification
 Some problem-solving skills so it knows which information to request
 How to respond:
