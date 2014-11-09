@@ -13,7 +13,8 @@ public class ALEx{
 	public ALEx (int dim) {
 		x = 0;
 		y = 0; 
-		world = new Environment(dim); 
+		dimension = dim;
+		world = new Environment(dimension); 
 	}
 
 	public ArrayList<Move> moveTo(int x, int y) { //move ALEx to position x, y 
@@ -45,8 +46,8 @@ public class ALEx{
 		return moves; 
 	}
 
-	public boolean pickUp(int x, int y) { //pick up item in environment 
-		moveTo(x,y);
+	public boolean pickUp(/*int x, int y*/) { //pick up item in environment 
+		//moveTo(x,y);
 		if(world.stuff[x][y] == null)
 		{
 			System.out.println("There's nothing here!!!");
@@ -92,7 +93,25 @@ public class ALEx{
 	public int getY() {
 		return this.y; 
 	}
-
+	
+	public boolean setX(int newx){
+		if (newx >= 0 && newx < dimension){
+			this.x = newx;
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public boolean setY(int newy){
+		if (newy >= 0 && newy < dimension){
+			this.y = newy;
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
 	public ArrayList<Item> getBackpack() {
 		return this.items; 
 	}

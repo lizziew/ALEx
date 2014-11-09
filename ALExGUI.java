@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -28,35 +29,38 @@ import javax.swing.Timer;
 
 
 public class ALExGUI {
-
 	
-	Timer t;
-	GraphicsPanel grid;
-	JTextArea record; 
-	JTextField input;
-	JPanel righthalf;
-	int ALExx = 2;
-	int ALExy = 3;
-	BufferedImage img; 
-	int columnwidth;
-	ALEx alex; 
-	JButton go;
-	BufferedImage [][] itemsprites = new BufferedImage[5][11];
+	Timer t;  							//Called every 25 ms to update painted component
+	GraphicsPanel grid;					//The painted component
+	JTextArea record; 					//Shows stuff that has been input and output
+	JTextField input;					//Where you type
+	JPanel bottomhalf;					//Contains components other than the graphicspanel
+	int ALExx = 0;						//Alex's starting x and y coords
+	int ALExy = 0;
+	int destinationx = 0;				//Alex's current destination x
+	int destinationy = 0;				//current destination y
+	boolean pickuppending = false; 				//is alex on his way to pick something up? 
+	BufferedImage alexsprite; 			//Alex's sprite image
+	int columnwidth;					//will become the size of the graphicspanel divided by the number of columns, for drawing purposes
+	ALEx alex; 							//Alex.
+	JButton go;							//Press to enter text
+	BufferedImage [][] itemsprites = new BufferedImage[5][11];	//an array of pictures of different-colored shapes
+	int dimensions; 					//The size of the (square) board
+	int objectdensity = 25; 					//out of 100
+	int stepcounter = 0; 				//Alex only moves every fourth time the board is redrawn
 	
-	int dimensions; 
-	
-	public static void main(String[] args) {
+	public static void main(String[] args) {		//Main method calls constructor, where most of the stuff happens
 		ALExGUI letsgo = new ALExGUI();
 	}
 
 	public ALExGUI() {
 		
-		dimensions = 5;
+		dimensions = 15;
 		
 		alex = new ALEx(dimensions);
 		
-		try {
-		    img = ImageIO.read(new File("sprite.png"));
+		try {														//Reading in the multitudinous sprites
+		    alexsprite = ImageIO.read(new File("sprite.png"));
 		    
 		    itemsprites[0][0] = ImageIO.read(new File("itemsprites/circle-red.png"));
 		    itemsprites[0][1] = ImageIO.read(new File("itemsprites/circle-orange.png"));
@@ -122,11 +126,11 @@ public class ALExGUI {
 			System.out.println(e);
 		}
 		
-		JFrame frame = new JFrame("ALEx - Artificial Linguistic Executor");
+		JFrame frame = new JFrame("ALEx - Artificial Linguistic Executor");					//Making and placing all the components
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
 		
-		righthalf = new JPanel();
+		bottomhalf = new JPanel();
 		
 		columnwidth = Math.round((float)500/(float)dimensions);
 		
@@ -138,23 +142,21 @@ public class ALExGUI {
 		
 		frame.add(grid);
 		Box.createRigidArea(new Dimension(0,5));
-		frame.add(righthalf);
+		frame.add(bottomhalf);
 		
-		righthalf.setLayout(new BorderLayout());
+		bottomhalf.setLayout(new BorderLayout());
 		
 		record = new JTextArea();
 		record.setEditable(false);
 		record.setLineWrap(true);
 		record.setWrapStyleWord(true);
 		JScrollPane scrollPane = new JScrollPane(record);
-		
-		righthalf.add(scrollPane, BorderLayout.CENTER);
+		bottomhalf.add(scrollPane, BorderLayout.CENTER);
 		
 		JPanel inputandgo = new JPanel();
-		righthalf.add(inputandgo, BorderLayout.PAGE_END);
+		bottomhalf.add(inputandgo, BorderLayout.PAGE_END);
 		
 		inputandgo.setLayout(new BorderLayout());
-		
 		
 		input = new JTextField("Input");
 		inputandgo.add(input, BorderLayout.CENTER);
@@ -166,23 +168,76 @@ public class ALExGUI {
 		t= new Timer(25,new TimerHandler());
 		t.start(); 
 		
+		//put some objects in the frame
+		int objnumber = Math.round((float)((dimensions * dimensions)*objectdensity)/(float)(100));
+		for (int i = 0; i<objnumber; i++){
+			
+			int randx = (byte) Math.round(Math.floor(Math.random()*dimensions));
+			int randy = (byte) Math.round(Math.floor(Math.random()*dimensions));
+			
+			while(alex.getEnviron().getStuff()[randx][randy] != null){
+				randx = (byte) Math.round(Math.floor(Math.random()*dimensions));
+				randy = (byte) Math.round(Math.floor(Math.random()*dimensions));
+			}
+			
+			int randcolor = (byte) Math.round(Math.floor(Math.random()*11));
+			int randshape = (byte) Math.round(Math.floor(Math.random()*5));
+			alex.getEnviron().addItem(randx, randy, new Item(randx, randy, randcolor, randshape));
+		}
+		
 		//Show the frame
 		frame.setSize(700, 700);
 		frame.setVisible(true);
 		
-		alex.getEnviron().addItem(2,2,new Item(2,2,"red", "square"));
-		alex.getEnviron().addItem(4,2,new Item(4,2,"blue", "square"));
-		alex.moveTo(3,3);
 		
 	}
 	
+	private void processInput(String inputtext){		//Processes and acts on a string of text inputted
 	
-	private class GraphicsPanel extends JPanel {
+		if (inputtext.contains("move")){
+			pickuppending = false;
+			inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
+			int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
+			int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
+			if (destx >= 0 && destx < dimensions && desty >=0 && desty < dimensions){
+				destinationx = destx; 
+				destinationy = desty; 
+				System.out.println(destx + " " + desty);
+			}else{
+				record.append("Those are invalid coordinates!");
+			}
+		}else if(inputtext.contains("pick up")){
+			inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
+			inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
+			int x = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
+			int y = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
+			if (x >= 0 && x < dimensions && y >=0 && y < dimensions){
+				destinationx = x; 
+				destinationy = y; 
+				pickuppending = true;
+			}else{
+				record.append("Those are invalid coordinates!");
+			}
+		}else if(inputtext.contains("put down")){
+			if (alex.getBackpack().size() != 0){
+				if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
+					alex.putDown(alex.getItem(0));
+				}else{
+					record.append("There's already something here...");
+				}
+			}else{
+				record.append("I don't have anything to put down!");
+			}
+		}
+	}
+	
+	
+	private class GraphicsPanel extends JPanel{
 		BufferedImage graph;
 		Graphics graphdraw;
 		
 		public GraphicsPanel() {
-			graph = new BufferedImage(502, 502, BufferedImage.TYPE_INT_ARGB); 
+			graph = new BufferedImage(502, 502, BufferedImage.TYPE_INT_ARGB); //The extra two pixels are necessary because the division is inexact integer division
 			graphdraw = graph.createGraphics(); 
 		}
 
@@ -192,6 +247,48 @@ public class ALExGUI {
 		}
 		
 		public void paintComponent(Graphics g) {
+			
+			if (stepcounter == 0){
+				
+				System.out.println("Alex x " + ALExx + " Alex y " + ALExy + " Destination x " + destinationx + " Destination y " + destinationy);
+				
+				if (ALExx != destinationx || ALExy != destinationy){
+					if (ALExx != destinationx && ALExy != destinationy){
+						if(ALExy < destinationy){
+							alex.setY(ALExy + 1);
+						}else{
+							alex.setY(ALExy - 1);
+						}
+					}else if (ALExx != destinationx){
+						if(ALExx < destinationx){
+							alex.setX(ALExx + 1);
+						}else{
+							alex.setX(ALExx - 1);
+						}
+					}else if (ALExy != destinationy){
+						if(ALExy < destinationy){
+							alex.setY(ALExy + 1);
+						}else{
+							alex.setY(ALExy - 1);
+						}
+					}
+					
+				}
+			}
+			
+			stepcounter++;
+			if (stepcounter == 8){
+				stepcounter = 0;
+			}
+			
+			if (pickuppending && ALExx == destinationx && ALExy == destinationy){
+				if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
+					alex.pickUp();
+				}else{
+					record.append("There's nothing here to pick up!");
+				}
+				pickuppending = false;
+			}
 			
 			ALExx = alex.getX();
 			ALExy = alex.getY();
@@ -261,42 +358,26 @@ public class ALExGUI {
 				}
 			}
 	
-			graphdraw.drawImage(img, ALExx*columnwidth, ALExy*columnwidth, columnwidth, columnwidth, null);
+			graphdraw.drawImage(alexsprite, ALExx*columnwidth, ALExy*columnwidth, columnwidth, columnwidth, null);
 			
 			g.drawImage(graph, 0, 0, null);
 		}
 	}	
 
 	
-	private class MouseHandler implements MouseListener{
+	
+	private class MouseHandler implements MouseListener{	//registers when someone clicks the go button
+		
 		public void mouseClicked(MouseEvent e){
 			if (e.getSource().equals(go)){
 				String inputtext = input.getText();
 				System.out.println("inputtext" + inputtext);
+				processInput(inputtext);
 				input.setText("");
-				if (inputtext.contains("move")){
-					inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
-					System.out.println("substring" + inputtext);
-					int x = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
-					System.out.println("x" + x);
-					int y = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
-					System.out.println("y" + y);
-					alex.moveTo(x,y);
-				}else if(inputtext.contains("pick up")){
-					inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
-					inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
-					int x = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
-					int y = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
-					alex.pickUp(x, y);
-				}else if(inputtext.contains("put down")){
-					if (alex.getBackpack().size() != 0){
-						alex.putDown(alex.getItem(0));
-					}
-				}
 			}
 		}
 
-		@Override
+		@Override										//the other methods have to be here but don't do anything
 		public void mouseEntered(MouseEvent arg0) {
 			// TODO Auto-generated method stub
 			
