@@ -46,9 +46,10 @@ Things to consider when understanding commands:
 	*	Translating VERB, COORDINATES, etc. into simple command (or sequence of commands) that ALExGUI can understand
 
 	*	Translate human spellings ("light blue") as ALEx spellings ("lightblue")
+	*	Special cases: pick up ALL stars
 
 Todo: 
 
 * Nov 10 class: "pick up"/"put down"/"light blue" --> go to blue star --> item exists/multiple items exist/item doesn't exist
 * Nov 10 hw: compound commands (go to blue star and pick it up) and negative commands (do not go to the blue star) 
-* Nov 11 class: store information between commands and answer back (pick up blue star...which blue star...the one at 3 3) 
+* Nov 11 class: store information between commands and answer back (pick up blue star...which blue star...the one at 3 3)
