@@ -47,3 +47,8 @@ Things to consider when understanding commands:
 
 	*	Translate human spellings ("light blue") as ALEx spellings ("lightblue")
 
+Todo: 
+
+* Nov 10 class: "pick up"/"put down"/"light blue" --> go to blue star --> item exists/multiple items exist/item doesn't exist
+* Nov 10 hw: compound commands (go to blue star and pick it up) and negative commands (do not go to the blue star) 
+* Nov 11 class: store information between commands and answer back (pick up blue star...which blue star...the one at 3 3) 
