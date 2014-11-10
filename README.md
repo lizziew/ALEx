@@ -34,4 +34,9 @@ Goals, ranked from theoretically easiest to theoretically hardest.
 	•	Understanding commands 
 	•	Figuring out what information to request to clarify commands 
 	•	If we have time, additional properties of objects and how to interact with them (edibility/heaviness/etc)
-  
+
+Things to consider when understanding commands:
+	*	Identify VERB, COORDINATES, COLOR and SHAPE (if an item is involved in the command), NEGATIVES
+	*	"Move" ambiguity -> "move to [item]" vs. "move [item] to"
+	*	Synonyms of "move," "pick up," "put down"
+	*	Translating VERB, COORDINATES, etc. into simple command (or sequence of commands) that ALExGUI can understand
