@@ -55,7 +55,7 @@ public class ALExGUI {
 
 	public ALExGUI() {
 		
-		dimensions = 15;
+		dimensions = 5;
 		
 		alex = new ALEx(dimensions);
 		
@@ -193,8 +193,9 @@ public class ALExGUI {
 	}
 	
 	private void processInput(String inputtext){		//Processes and acts on a string of text inputted
-	
-		if (inputtext.contains("move")){
+		if (inputtext.startsWith("!")){
+			record.append(inputtext.substring(1) + "\n");
+		}else if (inputtext.contains("move")){
 			pickuppending = false;
 			inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
 			int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
@@ -202,9 +203,8 @@ public class ALExGUI {
 			if (destx >= 0 && destx < dimensions && desty >=0 && desty < dimensions){
 				destinationx = destx; 
 				destinationy = desty; 
-				System.out.println(destx + " " + desty);
 			}else{
-				record.append("Those are invalid coordinates!");
+				record.append("Those are invalid coordinates!\n");
 			}
 		}else if(inputtext.contains("pick up")){
 			inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
@@ -216,17 +216,17 @@ public class ALExGUI {
 				destinationy = y; 
 				pickuppending = true;
 			}else{
-				record.append("Those are invalid coordinates!");
+				record.append("Those are invalid coordinates!\n");
 			}
 		}else if(inputtext.contains("put down")){
 			if (alex.getBackpack().size() != 0){
 				if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
 					alex.putDown(alex.getItem(0));
 				}else{
-					record.append("There's already something here...");
+					record.append("There's already something here...\n");
 				}
 			}else{
-				record.append("I don't have anything to put down!");
+				record.append("I don't have anything to put down!\n");
 			}
 		}
 	}
@@ -249,8 +249,6 @@ public class ALExGUI {
 		public void paintComponent(Graphics g) {
 			
 			if (stepcounter == 0){
-				
-				System.out.println("Alex x " + ALExx + " Alex y " + ALExy + " Destination x " + destinationx + " Destination y " + destinationy);
 				
 				if (ALExx != destinationx || ALExy != destinationy){
 					if (ALExx != destinationx && ALExy != destinationy){
@@ -285,7 +283,7 @@ public class ALExGUI {
 				if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
 					alex.pickUp();
 				}else{
-					record.append("There's nothing here to pick up!");
+					record.append("There's nothing here to pick up!\n");
 				}
 				pickuppending = false;
 			}
@@ -371,7 +369,7 @@ public class ALExGUI {
 		public void mouseClicked(MouseEvent e){
 			if (e.getSource().equals(go)){
 				String inputtext = input.getText();
-				processInput(inputtext);
+				processInput(alex.parseText(inputtext));
 				input.setText("");
 			}
 		}

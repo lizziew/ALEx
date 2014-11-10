@@ -10,7 +10,6 @@ public class ALEx{
 
 	private ArrayList<Item> items = new ArrayList<Item>();
 
-	private ArrayList<String> fuzzy_verbs;
 	private ArrayList<String> move_verbs;
 	private ArrayList<String> pickup_verbs;
 	private ArrayList<String> putdown_verbs;
@@ -20,13 +19,11 @@ public class ALEx{
 
 	public ALEx (int dim) {
 		
-		fuzzy_verbs = new ArrayList<String>();
-		fuzzy_verbs.add("move");
-		
 		move_verbs = new ArrayList<String>();
 		move_verbs.add("walk");
 		move_verbs.add("go");
 		move_verbs.add("find");
+		move_verbs.add("moveto");
 		
 		pickup_verbs = new ArrayList<String>();
 		pickup_verbs.add("get");
@@ -34,6 +31,7 @@ public class ALEx{
 		pickup_verbs.add("pickup");
 		pickup_verbs.add("carry");
 		pickup_verbs.add("transport");
+		pickup_verbs.add("move");
 		
 		putdown_verbs = new ArrayList<String>();
 		putdown_verbs.add("putdown");
@@ -71,49 +69,95 @@ public class ALEx{
 		
 		String rtn = "";
 		
-		//make this into arraylist plz
-		
+		s=s.toLowerCase();
 		String[] words = s.split(" ");
-		String[] processedwords = new String[words.length];
+		ArrayList<String> processedwords = new ArrayList<String>();
+		
+		for (int i = 0; i<words.length; i++){
+			System.out.println(i + " " + words[i]);
+		}
 		
 		for (int i = 0; i<words.length-1; i++){
 			if (words[i].equals("light") && words[i+1].equals("blue")){
-				processedwords[i] = "lightblue";
-				i++;
+				processedwords.add("lightblue");
+				words[i+1] = "";
 			}else if (words[i].equals("put") && words[i+1].equals("down")){
-				processedwords[i] = "putdown";
-				i++;
+				processedwords.add("putdown");
+				words[i+1] = "";
 			}else if (words[i].equals("pick") && words[i+1].equals("up")){
-				processedwords[i] = "pickup";
-				i++;
-			}else{
-				processedwords[i] = words[i];
+				processedwords.add("pickup");
+				words[i+1] = "";
+			}else if (words[i].equals("move") && words[i+1].equals("to")){
+				processedwords.add("moveto");
+				words[i+1] = "";
+			}else if (words[i].matches("[0-9]*") && words[i+1].matches("[0-9]*")){
+				processedwords.add("coord " + words[i] + " " + words[i+1]);
+				words[i+1] = "";
+			}else if (words[i].matches("[0-9],[0-9]")){
+				processedwords.add("coord " + words[i].charAt(0) + " " + words[i].charAt(2));
+			}else if (!words[i].equals("")){
+				processedwords.add(words[i]);
 			}
-	
 		}
 		
+		if (words[words.length-1] != null){
+			processedwords.add(words[words.length-1]);
+		}
+		
+		for (int i = 0; i<processedwords.size(); i++){
+			System.out.println(processedwords.get(i));
+		}
+		
+		
+		boolean neg = false; 
+		boolean all = false;
 		String color = "";
 		String shape = "";
 		String verb = "";
-		for (int i = 0; i<words.length; i++){
-			if (fuzzy_verbs.contains(words[i])){
-				verb = "fuzzy";
-			}
-			if (move_verbs.contains(words[i])){
+		Coord togo = null; 
+		
+		for (int i = 0; i<processedwords.size(); i++){
+			if (move_verbs.contains(processedwords.get(i))){
 				verb = "move";
 			}
-			if (pickup_verbs.contains(words[i])){
+			if (pickup_verbs.contains(processedwords.get(i))){
 				verb = "pick up";
 			}
-			if (putdown_verbs.contains(words[i])){
+			if (putdown_verbs.contains(processedwords.get(i))){
 				verb = "put down";
 			}
-			if (colors.contains(words[i])){
-				color = words[i];
+			if (colors.contains(processedwords.get(i))){
+				color = processedwords.get(i);
 			}
-			if (shapes.contains(words[i])){
-				shape = words[i];
+			if (shapes.contains(processedwords.get(i))){
+				shape = processedwords.get(i);
 			}
+			if (processedwords.get(i).equals("all")){
+				all = true;
+			}
+			if (processedwords.get(i).contains("coord")){
+				String inputtext = processedwords.get(i);
+				inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
+				int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
+				int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
+				togo = new Coord(destx, desty);
+			}
+		}
+		
+		if (verb.equals("move") && togo != null){
+			rtn = ("move " + togo.getL() + " " + togo.getR());
+		}else if (verb.equals("move") && !color.equals("") && !shape.equals("")){
+			ArrayList<Coord> found = findItem(new Item(-1, -1, color,shape));
+			if (found.size() == 0){
+				rtn = "!There are no objects like that!";
+			}else if(found.size() == 1){
+				rtn = ("move " + found.get(0).getL() + " " + found.get(0).getR());
+			}else{
+				rtn = ("!I don't know which one you mean.");
+			}
+		}else if (verb.equals("move") && !color.equals("")){
+			
+		}else if (verb.equals("move") && !shape.equals("")){
 			
 		}
 		
@@ -124,8 +168,10 @@ public class ALEx{
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 		for (int i=0; i<dimension; i++){
 			for (int j=0; j<dimension; j++){
-				if (world.getStuff()[i][j].equals(it)){
-					rtn.add(new Coord(i,j));
+				if (world.getStuff()[i][j] != null){
+					if (world.getStuff()[i][j].equals(it)){
+						rtn.add(new Coord(i,j));
+					}
 				}
 			}
 		}
