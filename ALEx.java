@@ -10,49 +10,152 @@ public class ALEx{
 
 	private ArrayList<Item> items = new ArrayList<Item>();
 
-	private String fuzzy_verbs[] = {"move"}; 
-	private String move_verbs[] = {"walk", "go", "find"}; 
-	private String pickup_verbs[] = {"get", "fetch", "pick up", "carry", "transport"};
-	private String putdown_verbs[] = {"put down", "drop", "set down"}; 
+	private ArrayList<String> fuzzy_verbs;
+	private ArrayList<String> move_verbs;
+	private ArrayList<String> pickup_verbs;
+	private ArrayList<String> putdown_verbs;
 
-	private String colors[] = {"red", "orange", "yellow", "green", "blue", "lightblue", "purple", "pink", "brown", "gray", "black"}; 
-	private String shapes[] = {"moon", "crescent", "circle", "square", "star", "triangle"};
+	private ArrayList<String> colors; 
+	private ArrayList<String> shapes;
 
 	public ALEx (int dim) {
+		
+		fuzzy_verbs = new ArrayList<String>();
+		fuzzy_verbs.add("move");
+		
+		move_verbs = new ArrayList<String>();
+		move_verbs.add("walk");
+		move_verbs.add("go");
+		move_verbs.add("find");
+		
+		pickup_verbs = new ArrayList<String>();
+		pickup_verbs.add("get");
+		pickup_verbs.add("fetch");
+		pickup_verbs.add("pickup");
+		pickup_verbs.add("carry");
+		pickup_verbs.add("transport");
+		
+		putdown_verbs = new ArrayList<String>();
+		putdown_verbs.add("putdown");
+		putdown_verbs.add("drop");
+		putdown_verbs.add("setdown");
+		
+		colors = new ArrayList<String>();
+		colors.add("red");
+		colors.add("orange");
+		colors.add("yellow");
+		colors.add("green");
+		colors.add("blue");
+		colors.add("lightblue");
+		colors.add("purple");
+		colors.add("pink");
+		colors.add("brown");
+		colors.add("gray");
+		colors.add("black");
+		
+		shapes = new ArrayList<String>();
+		shapes.add("moon");
+		shapes.add("crescent");
+		shapes.add("circle");
+		shapes.add("square");
+		shapes.add("star");
+		shapes.add("triangle");
+		
 		x = 0;
 		y = 0; 
 		dimension = dim;
 		world = new Environment(dimension); 
 	}
 
-	public ArrayList<Move> moveTo(int x, int y) { //move ALEx to position x, y 
-		int dx = -1; 
-		if(this.x < x) dx = 1; 
-
-		int DX = Math.abs(this.x-x); 
-
-		ArrayList<Move> moves = new ArrayList<Move>(); 
-
-		for(int i = 0; i < DX; i++) {
-			this.x += dx; 
-			for(int j = 0; j < items.size(); j++) 
-				items.get(j).setX(this.x);
-			moves.add(new Move(this.x, this.y)); 
+	public String parseText(String s){
+		
+		String rtn = "";
+		
+		//make this into arraylist plz
+		
+		String[] words = s.split(" ");
+		String[] processedwords = new String[words.length];
+		
+		for (int i = 0; i<words.length-1; i++){
+			if (words[i].equals("light") && words[i+1].equals("blue")){
+				processedwords[i] = "lightblue";
+				i++;
+			}else if (words[i].equals("put") && words[i+1].equals("down")){
+				processedwords[i] = "putdown";
+				i++;
+			}else if (words[i].equals("pick") && words[i+1].equals("up")){
+				processedwords[i] = "pickup";
+				i++;
+			}else{
+				processedwords[i] = words[i];
+			}
+	
 		}
-
-		int dy = -1; 
-		if(this.y < y) dy = 1; 
-		int DY = Math.abs(this.y-y); 
-
-		for(int i = 0; i < DY; i++) {
-			this.y += dy; 
-			for(int j = 0; j < items.size(); j++) 
-				items.get(j).setY(this.y);
-			moves.add(new Move(this.x, this.y)); 
+		
+		String color = "";
+		String shape = "";
+		String verb = "";
+		for (int i = 0; i<words.length; i++){
+			if (fuzzy_verbs.contains(words[i])){
+				verb = "fuzzy";
+			}
+			if (move_verbs.contains(words[i])){
+				verb = "move";
+			}
+			if (pickup_verbs.contains(words[i])){
+				verb = "pick up";
+			}
+			if (putdown_verbs.contains(words[i])){
+				verb = "put down";
+			}
+			if (colors.contains(words[i])){
+				color = words[i];
+			}
+			if (shapes.contains(words[i])){
+				shape = words[i];
+			}
+			
 		}
-
-		return moves; 
+		
+		return rtn;
 	}
+	
+	public ArrayList<Coord> findItem(Item it){
+		ArrayList<Coord> rtn = new ArrayList<Coord>();
+		for (int i=0; i<dimension; i++){
+			for (int j=0; j<dimension; j++){
+				if (world.getStuff()[i][j].equals(it)){
+					rtn.add(new Coord(i,j));
+				}
+			}
+		}
+		return rtn;
+	}
+	
+	public ArrayList<Coord> findColorItem(String c){
+		ArrayList<Coord> rtn = new ArrayList<Coord>();
+		for (int i=0; i<dimension; i++){
+			for (int j=0; j<dimension; j++){
+				if (world.getStuff()[i][j].getColor().equals(c)){
+					rtn.add(new Coord(i,j));
+				}
+			}
+		}
+		return rtn;
+	}
+	
+	public ArrayList<Coord> findShapeItem(String s){
+		ArrayList<Coord> rtn = new ArrayList<Coord>();
+		for (int i=0; i<dimension; i++){
+			for (int j=0; j<dimension; j++){
+				if (world.getStuff()[i][j].getColor().equals(s)){
+					rtn.add(new Coord(i,j));
+				}
+			}
+		}
+		return rtn;
+	}
+	
 
 	public boolean pickUp(/*int x, int y*/) { //pick up item in environment 
 		//moveTo(x,y);
@@ -132,11 +235,4 @@ public class ALEx{
 		return this.world; 
 	}
 
-	public static void main(String[] args) {
-		ALEx testbot = new ALEx(10); 
-		ArrayList<Move> moves = testbot.moveTo(4, 4); 
-		for(int i = 0; i < moves.size(); i++) {
-			System.out.println("moving to " + moves.get(i).getL() + " " + moves.get(i).getR());
-		}
-	}
 }

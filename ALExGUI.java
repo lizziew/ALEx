@@ -47,7 +47,7 @@ public class ALExGUI {
 	BufferedImage [][] itemsprites = new BufferedImage[5][11];	//an array of pictures of different-colored shapes
 	int dimensions; 					//The size of the (square) board
 	int objectdensity = 25; 					//out of 100
-	int stepcounter = 0; 				//Alex only moves every fourth time the board is redrawn
+	int stepcounter = 0; 				//Alex only moves every eighth time the board is redrawn
 	
 	public static void main(String[] args) {		//Main method calls constructor, where most of the stuff happens
 		ALExGUI letsgo = new ALExGUI();
@@ -371,7 +371,6 @@ public class ALExGUI {
 		public void mouseClicked(MouseEvent e){
 			if (e.getSource().equals(go)){
 				String inputtext = input.getText();
-				System.out.println("inputtext" + inputtext);
 				processInput(inputtext);
 				input.setText("");
 			}
