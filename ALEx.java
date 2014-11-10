@@ -10,6 +10,14 @@ public class ALEx{
 
 	private ArrayList<Item> items = new ArrayList<Item>();
 
+	private String fuzzy_verbs[] = {"move"}; 
+	private String move_verbs[] = {"walk", "go", "find"}; 
+	private String pickup_verbs[] = {"get", "fetch", "pick up", "carry", "transport"};
+	private String putdown_verbs[] = {"put down", "drop", "set down"}; 
+
+	private String colors[] = {"red", "orange", "yellow", "green", "blue", "lightblue", "purple", "pink", "brown", "gray", "black"}; 
+	private String shapes[] = {"moon", "crescent", "circle", "square", "star", "triangle"};
+
 	public ALEx (int dim) {
 		x = 0;
 		y = 0; 
