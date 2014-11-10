@@ -34,4 +34,22 @@ Goals, ranked from theoretically easiest to theoretically hardest.
 	•	Understanding commands 
 	•	Figuring out what information to request to clarify commands 
 	•	If we have time, additional properties of objects and how to interact with them (edibility/heaviness/etc)
-  
+
+Things to consider when understanding commands:
+
+	*	Identify VERB, COORDINATES, COLOR and SHAPE (if an item is involved in the command), NEGATIVES
+
+	*	"Move" ambiguity -> "move to [item]" vs. "move [item] to"
+
+	*	Synonyms of "move," "pick up," "put down"
+
+	*	Translating VERB, COORDINATES, etc. into simple command (or sequence of commands) that ALExGUI can understand
+
+	*	Translate human spellings ("light blue") as ALEx spellings ("lightblue")
+	*	Special cases: pick up ALL stars
+
+Todo: 
+
+* Nov 10 class: "pick up"/"put down"/"light blue" --> go to blue star --> item exists/multiple items exist/item doesn't exist
+* Nov 10 hw: compound commands (go to blue star and pick it up) and negative commands (do not go to the blue star) 
+* Nov 11 class: store information between commands and answer back (pick up blue star...which blue star...the one at 3 3)
