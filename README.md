@@ -44,3 +44,6 @@ Things to consider when understanding commands:
 	*	Synonyms of "move," "pick up," "put down"
 
 	*	Translating VERB, COORDINATES, etc. into simple command (or sequence of commands) that ALExGUI can understand
+
+	*	Translate human spellings ("light blue") as ALEx spellings ("lightblue")
+
