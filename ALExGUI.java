@@ -368,6 +368,8 @@ public class ALExGUI {
 			
 			//draw the backpack
 			
+			backpackdraw.setColor(Color.white);
+			backpackdraw.fillRect(0,0,100,500);
 			backpackdraw.setColor(Color.black);
 			backpackdraw.drawString("Backpack", 0, 475);
 			
@@ -387,11 +389,11 @@ public class ALExGUI {
 				int color = -1;
 				int shape = -1;
 				
-				if(s.equals("red")){
+				if(c.equals("red")){
 					color = 0;
-				}else if(s.equals("orange")){
+				}else if(c.equals("orange")){
 					color = 1; 
-				}else if(s.equals("yellow")){
+				}else if(c.equals("yellow")){
 					color = 2; 
 				}else if(c.equals("green")){
 					color = 3; 
