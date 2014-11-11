@@ -75,7 +75,7 @@ public class ALEx{
 		s=s.toLowerCase();
 
 ////dealing with negatives
-		if (s.contains(" no ") || s.contains(" not ") || s.contains"n't")
+		if (s.contains(" no ") || s.contains(" not ") || s.contains("n't"))
 		{
 			System.out.println("I am confused...");
 			return "*I don't quite understand what you want me to do.";
@@ -83,6 +83,22 @@ public class ALEx{
 
 
 		String[] words = s.split(" ");
+///Just trying another way to find verbs in the command
+
+
+
+		String verb = "";
+		
+		if (hasMoveVerb(words))
+			verb = "move";
+		else if (hasPickUpVerb(words))
+			verb = "pick up";
+		else if (hasPutDownVerb(words))
+			verb = "put down";
+
+		System.out.println("Found verb: " + verb);
+
+
 		ArrayList<String> processedwords = new ArrayList<String>();
 		
 		//get word phrases and coord if in cmd
@@ -131,11 +147,11 @@ public class ALEx{
 		boolean all = false; //contains special keyword "all"
 		String color = "";
 		String shape = "";
-		String verb = "";
+// (just as a test)		String verb = "";
 		Coord dest = null;
 		
 		for (int i = 0; i<processedwords.size(); i++){
-			if (move_verbs.contains(processedwords.get(i))){
+/*			if (move_verbs.contains(processedwords.get(i))){
 				verb = "move";
 			}
 			if (pickup_verbs.contains(processedwords.get(i))){
@@ -144,6 +160,7 @@ public class ALEx{
 			if (putdown_verbs.contains(processedwords.get(i))){
 				verb = "put down";
 			}
+*/
 			if (colors.contains(processedwords.get(i))){
 				color = processedwords.get(i);
 			}
@@ -175,6 +192,28 @@ public class ALEx{
 			rtn = "!I don't see any " + color + " " + shape + "s"; 
 		else if (verb.equals("move") && dest != null)
 			rtn = ("move " + dest.getL() + " " + dest.getR());
+		
+		if (verb.equals("pick up"))
+		{
+			if (coord_list.size() > 1)
+				rtn = "!I don't know which " + color + " " + shape + " you're referring to.";
+			else if (coord_list.size() == 0) 
+				rtn = "!I don't see any " + color + " " + shape + "s"; 
+			else if (dest != null)
+				rtn = ("pick up " + dest.getL() + " " + dest.getR());
+		}
+
+		if (verb.equals("put down"))
+		{
+			if (coord_list.size() > 1)
+				rtn = "!I don't know which " + color + " " + shape + " you're referring to.";
+			else if (coord_list.size() == 0) 
+				rtn = "!I don't see any " + color + " " + shape + "s"; 
+			else if (dest != null)
+				rtn = ("put down " + dest.getL() + " " + dest.getR());
+		}
+
+		System.out.println("Here's what's being sent to GUI: " + rtn);
 		return rtn;
 	}
 	
@@ -223,7 +262,64 @@ public class ALEx{
 		}
 		return rtn;
 	}
-	
+
+	private boolean hasMoveVerb(String[] s)
+	{
+		for (int i = 0; i < s.length; i++)
+		{
+			if (move_verbs.contains(s[i]))
+				return true;
+		}
+		return false;
+	}
+	private boolean hasPickUpVerb(String[] s)
+	{
+		for (int i = 0; i < s.length; i++)
+		{
+			//deal with the weird case where "pick" and "up" are far apart from each other
+			if (s[i].equals("pick"))
+			{
+				if (i+1 < s.length && s[i+1].equals("up"))
+					return true;
+				if (i+2 < s.length && s[i+2].equals("up"))
+					return true;
+				if (i+3 < s.length && s[i+3].equals("up"))
+					return true;
+				if (i+4 < s.length && s[i+4].equals("up"))
+					return true;
+				if (i+5 < s.length && s[i+5].equals("up"))
+					return true;
+			}
+			if (pickup_verbs.contains(s[i]))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean hasPutDownVerb(String[] s)
+	{
+		//copy and paste from hasPickUpVerb, then revise a bit
+		for (int i = 0; i < s.length; i++)
+		{
+			//deal with the weird case where "put" and "down" are far apart from each other
+			if (s[i].equals("put"))
+			{
+				if (i+1 < s.length && s[i+1].equals("down"))
+					return true;
+				if (i+2 < s.length && s[i+2].equals("down"))
+					return true;
+				if (i+3 < s.length && s[i+3].equals("down"))
+					return true;
+				if (i+4 < s.length && s[i+4].equals("down"))
+					return true;
+				if (i+5 < s.length && s[i+5].equals("down"))
+					return true;
+			}
+			if (pickup_verbs.contains(s[i]))
+				return true;
+		}
+		return false;
+	}
 
 	public boolean pickUp() { //pick up item in environment 
 		//moveTo(x,y);
