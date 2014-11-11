@@ -69,98 +69,38 @@ public class ALEx{
 	}
 
 	public String parseText(String s){
-		
 		String rtn = "";
-		
 		s=s.toLowerCase();
 
-////dealing with negatives
+		//dealing with negatives
 		if (s.contains(" no ") || s.contains(" not ") || s.contains("n't"))
 		{
 			System.out.println("I am confused...");
 			return "*I don't quite understand what you want me to do.";
 		}
 
-
 		String[] words = s.split(" ");
-///Just trying another way to find verbs in the command
 
-
-
-		String verb = "";
+		ArrayList<String> processedwords = processWords(words);
 		
-		if (hasMoveVerb(words))
+		String verb = "";
+		if (hasMoveVerb(processedwords))
 			verb = "move";
-		else if (hasPickUpVerb(words))
+		else if (hasPickUpVerb(processedwords))
 			verb = "pick up";
-		else if (hasPutDownVerb(words))
+		else if (hasPutDownVerb(processedwords))
 			verb = "put down";
 
 		System.out.println("Found verb: " + verb);
 
-
-		ArrayList<String> processedwords = new ArrayList<String>();
+		for (int i = 0; i<processedwords.size(); i++) System.out.println("processed " + processedwords.get(i));
 		
-		//get word phrases and coord if in cmd
-		for (int i = 0; i<words.length-1; i++){
-			if (words[i].equals("light") && words[i+1].equals("blue")){
-				processedwords.add("lightblue");
-				words[i+1] = "";
-			}else if (words[i].equals("put") && words[i+1].equals("down")){
-				processedwords.add("putdown");
-				words[i+1] = "";
-			}else if (words[i].equals("pick") && words[i+1].equals("up")){
-				processedwords.add("pickup");
-				words[i+1] = "";
-			}else if (words[i].equals("move") && words[i+1].equals("to")){
-				processedwords.add("moveto");
-				words[i+1] = "";
-			}else if (words[i].matches("[0-9]+") && words[i+1].matches("[0-9]+")){
-				processedwords.add("coord " + words[i] + " " + words[i+1]);
-				words[i+1] = "";
-			}else if (words[i].matches("[0-9]+,") && words[i+1].matches("[0-9]+")){
-				processedwords.add("coord " + words[i].substring(0,words[i].indexOf(",")) + " " + words[i+1]);
-				words[i+1] = "";
-			}else if (words[i].matches("[0-9]+,[0-9]+")){
-				System.out.println("aaaa");
-				processedwords.add("coord " + words[i].substring(0,words[i].indexOf(",")) + " " + words[i].substring(words[i].indexOf(",")+1));
-			}else if (!words[i].equals("")){
-				processedwords.add(words[i]);
-			}
-		}
-		
-		//what does this do? 
-		if (words[words.length-1] != null){
-			if (words[words.length-1].matches("[0-9]+,[0-9]+")){
-				System.out.println("bbbb");
-				processedwords.add("coord " + words[words.length-1].charAt(0) + " " + words[words.length-1].charAt(2));
-			}else{
-				processedwords.add(words[words.length-1]);
-			}
-		}
-		
-		for (int i = 0; i<processedwords.size(); i++){
-			System.out.println("processed " + processedwords.get(i));
-		}
-		
-		boolean neg = false; //negative command
 		boolean all = false; //contains special keyword "all"
 		String color = "";
 		String shape = "";
-// (just as a test)		String verb = "";
 		Coord dest = null;
 		
 		for (int i = 0; i<processedwords.size(); i++){
-/*			if (move_verbs.contains(processedwords.get(i))){
-				verb = "move";
-			}
-			if (pickup_verbs.contains(processedwords.get(i))){
-				verb = "pick up";
-			}
-			if (putdown_verbs.contains(processedwords.get(i))){
-				verb = "put down";
-			}
-*/
 			if (colors.contains(processedwords.get(i))){
 				color = processedwords.get(i);
 			}
@@ -175,6 +115,7 @@ public class ALEx{
 				inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
 				int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
 				int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
+				System.out.println("GOT COORD " + destx + " " + desty);
 				dest = new Coord(destx, desty);
 			}
 		} 
@@ -184,14 +125,17 @@ public class ALEx{
 			coord_list = findItem(color, shape);
 			if(coord_list.size() > 0) dest = coord_list.get(0); 
 		}
-	
+
 		//based on input, send back a cmd to GUI
 		if(verb.equals("move") && coord_list.size() > 1) 
 			rtn = "!I don't know which " + color + " " + shape + " you're referring to."; 
+		else if (verb.equals("move") && dest != null) {
+			System.out.println("aljsfdhlsadhflkjadsfjlakjdsf");
+			rtn = ("move " + dest.getL() + " " + dest.getR());
+		}
 		else if(verb.equals("move") && coord_list.size() == 0)
 			rtn = "!I don't see any " + color + " " + shape + "s"; 
-		else if (verb.equals("move") && dest != null)
-			rtn = ("move " + dest.getL() + " " + dest.getR());
+
 		
 		if (verb.equals("pick up"))
 		{
@@ -263,59 +207,100 @@ public class ALEx{
 		return rtn;
 	}
 
-	private boolean hasMoveVerb(String[] s)
+	private ArrayList<String> processWords(String[] words) {
+		ArrayList<String> processedwords = new ArrayList<String>(); 
+
+		for (int i = 0; i<words.length-1; i++){
+			if (words[i].equals("light") && words[i+1].equals("blue")){
+				processedwords.add("lightblue");
+				words[i+1] = "";
+			}else if (words[i].equals("put") && words[i+1].equals("down")){
+				processedwords.add("putdown");
+				words[i+1] = "";
+			}else if (words[i].equals("pick") && words[i+1].equals("up")){
+				processedwords.add("pickup");
+				words[i+1] = "";
+			}else if (words[i].equals("move") && words[i+1].equals("to")){ 
+				processedwords.add("moveto");
+				words[i+1] = "";
+			}else if (words[i].matches("[0-9]+") && words[i+1].matches("[0-9]+")){
+				processedwords.add("coord " + words[i] + " " + words[i+1]);
+				words[i+1] = "";
+			}else if (words[i].matches("[0-9]+,") && words[i+1].matches("[0-9]+")){
+				processedwords.add("coord " + words[i].substring(0,words[i].indexOf(",")) + " " + words[i+1]);
+				words[i+1] = "";
+			}else if (words[i].matches("[0-9]+,[0-9]+")){
+				processedwords.add("coord " + words[i].substring(0,words[i].indexOf(",")) + " " + words[i].substring(words[i].indexOf(",")+1));
+			}
+			else if (!words[i].equals("")){
+				processedwords.add(words[i]);
+			}
+		}
+		
+		if(!words[words.length-1].equals("")) {
+			if(words[words.length-1].matches("[0-9]+,[0-9]+")) {
+				processedwords.add("coord" + words[words.length-1].substring(0,words[words.length-1].indexOf(",")) + " " + words[words.length-1].substring(words[words.length-1].indexOf(",")+1));
+			}else{
+				processedwords.add(words[words.length-1]);
+			}
+		}
+
+		return processedwords; 
+	}
+
+	private boolean hasMoveVerb(ArrayList<String> s)
 	{
-		for (int i = 0; i < s.length; i++)
+		for (int i = 0; i < s.size(); i++)
 		{
-			if (move_verbs.contains(s[i]))
+			if (move_verbs.contains(s.get(i)))
 				return true;
 		}
 		return false;
 	}
-	private boolean hasPickUpVerb(String[] s)
+	private boolean hasPickUpVerb(ArrayList<String> s)
 	{
-		for (int i = 0; i < s.length; i++)
+		for (int i = 0; i < s.size(); i++)
 		{
 			//deal with the weird case where "pick" and "up" are far apart from each other
-			if (s[i].equals("pick"))
+			if (s.get(i).equals("pick"))
 			{
-				if (i+1 < s.length && s[i+1].equals("up"))
+				if (i+1 < s.size() && s.get(i+1).equals("up"))
 					return true;
-				if (i+2 < s.length && s[i+2].equals("up"))
+				if (i+2 < s.size() && s.get(i+2).equals("up"))
 					return true;
-				if (i+3 < s.length && s[i+3].equals("up"))
+				if (i+3 < s.size() && s.get(i+3).equals("up"))
 					return true;
-				if (i+4 < s.length && s[i+4].equals("up"))
+				if (i+4 < s.size() && s.get(i+4).equals("up"))
 					return true;
-				if (i+5 < s.length && s[i+5].equals("up"))
+				if (i+5 < s.size() && s.get(i+5).equals("up"))
 					return true;
 			}
-			if (pickup_verbs.contains(s[i]))
+			if (pickup_verbs.contains(s.get(i)))
 				return true;
 		}
 		return false;
 	}
 
-	private boolean hasPutDownVerb(String[] s)
+	private boolean hasPutDownVerb(ArrayList<String> s)
 	{
 		//copy and paste from hasPickUpVerb, then revise a bit
-		for (int i = 0; i < s.length; i++)
+		for (int i = 0; i < s.size(); i++)
 		{
 			//deal with the weird case where "put" and "down" are far apart from each other
-			if (s[i].equals("put"))
+			if (s.get(i).equals("put"))
 			{
-				if (i+1 < s.length && s[i+1].equals("down"))
+				if (i+1 < s.size() && s.get(i+1).equals("down"))
 					return true;
-				if (i+2 < s.length && s[i+2].equals("down"))
+				if (i+2 < s.size() && s.get(i+2).equals("down"))
 					return true;
-				if (i+3 < s.length && s[i+3].equals("down"))
+				if (i+3 < s.size() && s.get(i+3).equals("down"))
 					return true;
-				if (i+4 < s.length && s[i+4].equals("down"))
+				if (i+4 < s.size() && s.get(i+4).equals("down"))
 					return true;
-				if (i+5 < s.length && s[i+5].equals("down"))
+				if (i+5 < s.size() && s.get(i+5).equals("down"))
 					return true;
 			}
-			if (pickup_verbs.contains(s[i]))
+			if (pickup_verbs.contains(s.get(i)))
 				return true;
 		}
 		return false;
