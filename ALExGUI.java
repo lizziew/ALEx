@@ -55,7 +55,7 @@ public class ALExGUI {
 
 	public ALExGUI() {
 		
-		dimensions = 5;
+		dimensions = 15;
 		
 		alex = new ALEx(dimensions);
 		

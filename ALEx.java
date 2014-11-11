@@ -78,6 +78,7 @@ public class ALEx{
 		}
 		
 		for (int i = 0; i<words.length-1; i++){
+			System.out.println("processing " + words[i]);
 			if (words[i].equals("light") && words[i+1].equals("blue")){
 				processedwords.add("lightblue");
 				words[i+1] = "";
@@ -90,31 +91,39 @@ public class ALEx{
 			}else if (words[i].equals("move") && words[i+1].equals("to")){
 				processedwords.add("moveto");
 				words[i+1] = "";
-			}else if (words[i].matches("[0-9]*") && words[i+1].matches("[0-9]*")){
+			}else if (words[i].matches("[0-9]+") && words[i+1].matches("[0-9]+")){
 				processedwords.add("coord " + words[i] + " " + words[i+1]);
 				words[i+1] = "";
-			}else if (words[i].matches("[0-9],[0-9]")){
-				processedwords.add("coord " + words[i].charAt(0) + " " + words[i].charAt(2));
+			}else if (words[i].matches("[0-9]+,") && words[i+1].matches("[0-9]+")){
+				processedwords.add("coord " + words[i].substring(0,words[i].indexOf(",")) + " " + words[i+1]);
+				words[i+1] = "";
+			}else if (words[i].matches("[0-9]+,[0-9]+")){
+				System.out.println("aaaa");
+				processedwords.add("coord " + words[i].substring(0,words[i].indexOf(",")) + " " + words[i].substring(words[i].indexOf(",")+1));
 			}else if (!words[i].equals("")){
 				processedwords.add(words[i]);
 			}
 		}
 		
 		if (words[words.length-1] != null){
-			processedwords.add(words[words.length-1]);
+			if (words[words.length-1].matches("[0-9]+,[0-9]+")){
+				System.out.println("aaaa");
+				processedwords.add("coord " + words[words.length-1].charAt(0) + " " + words[words.length-1].charAt(2));
+			}else{
+				processedwords.add(words[words.length-1]);
+			}
 		}
 		
 		for (int i = 0; i<processedwords.size(); i++){
 			System.out.println(processedwords.get(i));
 		}
 		
-		
 		boolean neg = false; 
 		boolean all = false;
 		String color = "";
 		String shape = "";
 		String verb = "";
-		Coord togo = null; 
+		Coord togo = null;
 		
 		for (int i = 0; i<processedwords.size(); i++){
 			if (move_verbs.contains(processedwords.get(i))){
@@ -143,6 +152,9 @@ public class ALEx{
 				togo = new Coord(destx, desty);
 			}
 		}
+		
+		System.out.println("verb " + verb);
+		System.out.println("togo " + togo.getL() + " " + togo.getR());
 		
 		if (verb.equals("move") && togo != null){
 			rtn = ("move " + togo.getL() + " " + togo.getR());
@@ -203,7 +215,7 @@ public class ALEx{
 	}
 	
 
-	public boolean pickUp(/*int x, int y*/) { //pick up item in environment 
+	public boolean pickUp() { //pick up item in environment 
 		//moveTo(x,y);
 		if(world.stuff[x][y] == null)
 		{
