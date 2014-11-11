@@ -35,10 +35,16 @@ public class ALEx{
 		pickup_verbs.add("carry");
 		pickup_verbs.add("transport");
 		pickup_verbs.add("move");
-		
+
+//need to account for "carry object from here to there"		
+//also "send object from here to there"
+	//basically, the word "from" means we need to both pickup and putdown
+	
 		putdown_verbs = new ArrayList<String>();
 		putdown_verbs.add("putdown");
 		putdown_verbs.add("drop");
+		putdown_verbs.add("set");
+		putdown_verbs.add("leave");
 		putdown_verbs.add("setdown");
 		
 		colors = new ArrayList<String>();
