@@ -70,6 +70,15 @@ public class ALEx{
 		String rtn = "";
 		
 		s=s.toLowerCase();
+
+////dealing with negatives
+		if (s.contains(" no ") || s.contains(" not ") || s.contains"n't")
+		{
+			System.out.println("I am confused...");
+			return "*I don't quite understand what you want me to do.";
+		}
+
+
 		String[] words = s.split(" ");
 		ArrayList<String> processedwords = new ArrayList<String>();
 		
