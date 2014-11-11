@@ -135,8 +135,8 @@ public class ALExGUI {
 		columnwidth = Math.round((float)500/(float)dimensions);
 		
 		grid = new GraphicsPanel();
-		grid.setPreferredSize(new Dimension(500,500));
-		grid.setMaximumSize(new Dimension(500,500));
+		grid.setPreferredSize(new Dimension(600,500));
+		grid.setMaximumSize(new Dimension(600,500));
 		grid.setAlignmentX((float)0.5);
 		grid.setAlignmentY((float)0.5);
 		
@@ -233,12 +233,16 @@ public class ALExGUI {
 	
 	
 	private class GraphicsPanel extends JPanel{
-		BufferedImage graph;
+		BufferedImage graph; 		//the grid
+		BufferedImage backpack; 	//the backpack
 		Graphics graphdraw;
+		Graphics backpackdraw;
 		
 		public GraphicsPanel() {
 			graph = new BufferedImage(502, 502, BufferedImage.TYPE_INT_ARGB); //The extra two pixels are necessary because the division is inexact integer division
+			backpack = new BufferedImage(100,502, BufferedImage.TYPE_INT_ARGB);
 			graphdraw = graph.createGraphics(); 
+			backpackdraw = backpack.createGraphics();
 		}
 
 		//Update is called by the TimerHandler when the timer updates.
@@ -247,6 +251,8 @@ public class ALExGUI {
 		}
 		
 		public void paintComponent(Graphics g) {
+			
+			//Move alex towards the destination, if it is the correct step (only does this 1/8 times) 
 			
 			if (stepcounter == 0){
 				
@@ -290,6 +296,8 @@ public class ALExGUI {
 			
 			ALExx = alex.getX();
 			ALExy = alex.getY();
+			
+			//draw the grid and fill in objects and alex
 			
 			graphdraw.setColor(Color.white);
 			graphdraw.fillRect(0, 0, 500, 500);
@@ -355,10 +363,73 @@ public class ALExGUI {
 					
 				}
 			}
-	
+
 			graphdraw.drawImage(alexsprite, ALExx*columnwidth, ALExy*columnwidth, columnwidth, columnwidth, null);
 			
-			g.drawImage(graph, 0, 0, null);
+			//draw the backpack
+			
+			backpackdraw.setColor(Color.black);
+			backpackdraw.drawString("Backpack", 0, 475);
+			
+			int items = alex.getBackpack().size();
+			int width = -1;								//initialize width (of backpack item sprites)
+			if (items != 0){
+				width = 475/items;						//make it the correct size
+				if (width > 100){						//if it is wider than 100, set it to 100 so it does not extend outside the backpack bar	
+					width = 100;						
+				}
+			}
+			
+			for (int i = 0; i<items; i++){
+				
+				String c = alex.getBackpack().get(i).getColor();
+				String s = alex.getBackpack().get(i).getShape();
+				int color = -1;
+				int shape = -1;
+				
+				if(s.equals("red")){
+					color = 0;
+				}else if(s.equals("orange")){
+					color = 1; 
+				}else if(s.equals("yellow")){
+					color = 2; 
+				}else if(c.equals("green")){
+					color = 3; 
+				}else if(c.equals("blue")){
+					color = 4; 
+				}else if(c.equals("lightblue")){
+					color = 5; 
+				}else if(c.equals("purple")){
+					color = 6; 
+				}else if(c.equals("pink")){
+					color = 7; 
+				}else if(c.equals("brown")){
+					color = 8; 
+				}else if(c.equals("gray")){
+					color = 9; 
+				}else if(c.equals("black")){
+					color = 10; 
+				}
+				
+				if(s.equals("circle")){
+					shape = 0;
+				}else if(s.equals("moon")){
+					shape = 1;
+				}else if(s.equals("square")){
+					shape = 2;
+				}else if(s.equals("star")){
+					shape = 3;
+				}else if(s.equals("triangle")){
+					shape = 4;
+				}
+				
+				
+				backpackdraw.drawImage(itemsprites[shape][color], 0, i*width, width, width, null);
+				
+			}
+			
+			g.drawImage(backpack, 0, 0, null);
+			g.drawImage(graph, 100, 0, null);
 		}
 	}	
 
