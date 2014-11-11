@@ -50,6 +50,7 @@ Things to consider when understanding commands:
 
 Todo: 
 
-* Nov 10 class: "pick up"/"put down"/"light blue" --> go to blue star --> item exists/multiple items exist/item doesn't exist
-* Nov 10 hw: compound commands (go to blue star and pick it up) and negative commands (do not go to the blue star) 
-* Nov 11 class: store information between commands and answer back (pick up blue star...which blue star...the one at 3 3)
+*  "pick up"/"put down"/"light blue" --> go to blue star --> item exists/multiple items exist/item doesn't exist --> DONE 
+*  Nov 11 class: respond to other verbs (pick up and put down)
+* compound commands (go to blue star and pick it up) and negative commands (do not go to the blue star) 
+* store information between commands and answer back (pick up blue star...which blue star...the one at 3 3)
