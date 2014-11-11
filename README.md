@@ -51,7 +51,10 @@ Things to consider when understanding commands:
 Todo: 
 
 *  "pick up"/"put down"/"light blue" --> go to blue star --> item exists/multiple items exist/item doesn't exist --> DONE 
-*  Nov 11 class: respond to other verbs (pick up and put down)
+*  Nov 11 class: respond to other verbs (pick up and put down) --> DONE
 * compound commands (go to blue star and pick it up) If not complete command (move + coord, pick up + item, put down + item), then iterate back until we find clause with the missing info
-* negative commands (do not go to the blue star) Ignore everything in that clause 
+* negative commands (do not go to the blue star) Ignore everything in that clause --> DONE 
 * store information between commands and answer back (pick up blue star...which blue star...the one at 3 3) Keep a list of previous commands, split by clause. 
+* deal with multiple verbs like "I think you should go PICK UP the ..." (interpreting it as "pick up" rather than "move")
+
+
