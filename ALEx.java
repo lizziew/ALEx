@@ -17,6 +17,9 @@ public class ALEx{
 	private ArrayList<String> colors; 
 	private ArrayList<String> shapes;
 
+	private String def_colors[] = {"red", "orange", "yellow", "green", "blue", "lightblue", "purple", "pink", "brown", "gray", "black"}; 
+	private String def_shapes[] = {"circle", "moon", "square", "star", "triangle"};
+
 	public ALEx (int dim) {
 		
 		move_verbs = new ArrayList<String>();
@@ -73,12 +76,8 @@ public class ALEx{
 		String[] words = s.split(" ");
 		ArrayList<String> processedwords = new ArrayList<String>();
 		
-		for (int i = 0; i<words.length; i++){
-			System.out.println(i + " " + words[i]);
-		}
-		
+		//get word phrases and coord if in cmd
 		for (int i = 0; i<words.length-1; i++){
-			System.out.println("processing " + words[i]);
 			if (words[i].equals("light") && words[i+1].equals("blue")){
 				processedwords.add("lightblue");
 				words[i+1] = "";
@@ -105,9 +104,10 @@ public class ALEx{
 			}
 		}
 		
+		//what does this do? 
 		if (words[words.length-1] != null){
 			if (words[words.length-1].matches("[0-9]+,[0-9]+")){
-				System.out.println("aaaa");
+				System.out.println("bbbb");
 				processedwords.add("coord " + words[words.length-1].charAt(0) + " " + words[words.length-1].charAt(2));
 			}else{
 				processedwords.add(words[words.length-1]);
@@ -115,15 +115,15 @@ public class ALEx{
 		}
 		
 		for (int i = 0; i<processedwords.size(); i++){
-			System.out.println(processedwords.get(i));
+			System.out.println("processed " + processedwords.get(i));
 		}
 		
-		boolean neg = false; 
-		boolean all = false;
+		boolean neg = false; //negative command
+		boolean all = false; //contains special keyword "all"
 		String color = "";
 		String shape = "";
 		String verb = "";
-		Coord togo = null;
+		Coord dest = null;
 		
 		for (int i = 0; i<processedwords.size(); i++){
 			if (move_verbs.contains(processedwords.get(i))){
@@ -149,48 +149,49 @@ public class ALEx{
 				inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
 				int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
 				int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
-				togo = new Coord(destx, desty);
+				dest = new Coord(destx, desty);
 			}
+		} 
+
+		ArrayList<Coord> coord_list = new ArrayList<Coord>(); 
+		if(dest == null) {  
+			coord_list = findItem(color, shape);
+			if(coord_list.size() > 0) dest = coord_list.get(0); 
 		}
-		
-		System.out.println("verb " + verb);
-		System.out.println("togo " + togo.getL() + " " + togo.getR());
-		
-		if (verb.equals("move") && togo != null){
-			rtn = ("move " + togo.getL() + " " + togo.getR());
-		}else if (verb.equals("move") && !color.equals("") && !shape.equals("")){
-			ArrayList<Coord> found = findItem(new Item(-1, -1, color,shape));
-			if (found.size() == 0){
-				rtn = "!There are no objects like that!";
-			}else if(found.size() == 1){
-				rtn = ("move " + found.get(0).getL() + " " + found.get(0).getR());
-			}else{
-				rtn = ("!I don't know which one you mean.");
-			}
-		}else if (verb.equals("move") && !color.equals("")){
-			
-		}else if (verb.equals("move") && !shape.equals("")){
-			
-		}
-		
+	
+		//based on input, send back a cmd to GUI
+		if(verb.equals("move") && coord_list.size() > 1) 
+			rtn = "!I don't know which " + color + " " + shape + " you're referring to."; 
+		else if(verb.equals("move") && coord_list.size() == 0)
+			rtn = "!I don't see any " + color + " " + shape + "s"; 
+		else if (verb.equals("move") && dest != null)
+			rtn = ("move " + dest.getL() + " " + dest.getR());
 		return rtn;
 	}
 	
-	public ArrayList<Coord> findItem(Item it){
+	private ArrayList<Coord> findItem(String color, String shape){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
-		for (int i=0; i<dimension; i++){
-			for (int j=0; j<dimension; j++){
-				if (world.getStuff()[i][j] != null){
-					if (world.getStuff()[i][j].equals(it)){
-						rtn.add(new Coord(i,j));
-					}
-				}
-			}
+
+		if(color == "" && shape == "")
+			return rtn; 
+		if(color == "") {
+			rtn = findShapeItem(shape); 
+			return rtn; 
 		}
+		if(shape == "") {
+			rtn = findColorItem(color);
+			return rtn; 
+		}
+
+		for (int i=0; i<dimension; i++)
+			for (int j=0; j<dimension; j++)
+				if (world.getStuff()[i][j] != null)
+					if (world.getStuff()[i][j].getColor().equals(color) && world.getStuff()[i][j].getShape().equals(shape))
+						rtn.add(new Coord(i,j));
 		return rtn;
 	}
 	
-	public ArrayList<Coord> findColorItem(String c){
+	private ArrayList<Coord> findColorItem(String c){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 		for (int i=0; i<dimension; i++){
 			for (int j=0; j<dimension; j++){
@@ -202,7 +203,7 @@ public class ALEx{
 		return rtn;
 	}
 	
-	public ArrayList<Coord> findShapeItem(String s){
+	private ArrayList<Coord> findShapeItem(String s){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 		for (int i=0; i<dimension; i++){
 			for (int j=0; j<dimension; j++){
