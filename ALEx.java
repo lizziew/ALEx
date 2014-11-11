@@ -35,6 +35,7 @@ public class ALEx{
 		pickup_verbs.add("carry");
 		pickup_verbs.add("transport");
 		pickup_verbs.add("move");
+		pickup_verbs.add("grab");
 
 //need to account for "carry object from here to there"		
 //also "send object from here to there"
