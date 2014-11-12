@@ -83,7 +83,7 @@ public class ALEx{
 		if (s.contains(" no ") || s.contains(" not ") || s.contains("n't"))
 		{
 			System.out.println("I am confused...");
-			return "*I don't quite understand what you want me to do.";
+			return "!I don't quite understand what you want me to do.";
 		}
 
 		String[] words = s.split(" ");
@@ -151,17 +151,23 @@ public class ALEx{
 			else if (coord_list.size() == 0) 
 				rtn = "!I don't see any " + color + " " + shape + "s"; 
 			else if (dest != null)
-				rtn = ("pick up " + dest.getL() + " " + dest.getR());
+				rtn = ("move " + dest.getL() + " " + dest.getR() + "|pick up");
 		}
 
+		//check if we have it in the backpack, and if so, drop it
 		if (verb.equals("put down"))
 		{
-			if (coord_list.size() > 1)
-				rtn = "!I don't know which " + color + " " + shape + " you're referring to.";
-			else if (coord_list.size() == 0) 
-				rtn = "!I don't see any " + color + " " + shape + "s"; 
-			else if (dest != null)
-				rtn = ("put down " + dest.getL() + " " + dest.getR());
+			if (hasItem(new Item(-1, -1, color,shape)) != -1){
+				if (dest != null){
+					//moves to correct location, then drops it
+					//(putdown takes item's index in the backpack)
+					rtn = ("move " + dest.getL() + " " + dest.getR() +"|put down " + hasItem(new Item(-1,-1,color,shape)));
+				}else{
+					rtn = ("put down " + hasItem(new Item(-1,-1,color,shape)));
+				}
+			}else{
+				rtn = "!I'm not carrying a " + color + " " + shape;
+			}	
 		}
 
 		System.out.println("Here's what's being sent to GUI: " + rtn);
@@ -307,7 +313,7 @@ public class ALEx{
 				if (i+5 < s.size() && s.get(i+5).equals("down"))
 					return true;
 			}
-			if (pickup_verbs.contains(s.get(i)))
+			if (putdown_verbs.contains(s.get(i)))
 				return true;
 		}
 		return false;

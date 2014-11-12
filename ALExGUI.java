@@ -40,6 +40,7 @@ public class ALExGUI {
 	int destinationx = 0;				//Alex's current destination x
 	int destinationy = 0;				//current destination y
 	boolean pickuppending = false; 				//is alex on his way to pick something up? 
+	int putdownpending = -1;			//is alex on the way to put down any object, and if so which?
 	BufferedImage alexsprite; 			//Alex's sprite image
 	int columnwidth;					//will become the size of the graphicspanel divided by the number of columns, for drawing purposes
 	ALEx alex; 							//Alex.
@@ -193,40 +194,38 @@ public class ALExGUI {
 	}
 	
 	private void processInput(String inputtext){		//Processes and acts on a string of text inputted
-		if (inputtext.startsWith("!")){
-			record.append(inputtext.substring(1) + "\n");
-		}else if (inputtext.contains("move")){
-			pickuppending = false;
-			inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
-			int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
-			int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
-			if (destx >= 0 && destx < dimensions && desty >=0 && desty < dimensions){
-				destinationx = destx; 
-				destinationy = desty; 
-			}else{
-				record.append("Those are invalid coordinates!\n");
-			}
-		}else if(inputtext.contains("pick up")){
-			inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
-			inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
-			int x = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
-			int y = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
-			if (x >= 0 && x < dimensions && y >=0 && y < dimensions){
-				destinationx = x; 
-				destinationy = y; 
-				pickuppending = true;
-			}else{
-				record.append("Those are invalid coordinates!\n");
-			}
-		}else if(inputtext.contains("put down")){
-			if (alex.getBackpack().size() != 0){
-				if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
-					alex.putDown(alex.getItem(0));
+		
+		//first, split string by | delimiter
+		String[] inputsplit = inputtext.split("\\|");
+		
+		//then process each one
+		for (int i = 0; i<inputsplit.length; i++){
+		
+			//if it starts with a !, it is meant to be sent immediately to output and not acted on
+			if (inputsplit[i].startsWith("!")){
+				record.append(inputsplit[i].substring(1) + "\n");
+			}else if (inputsplit[i].contains("move")){
+				pickuppending = false;
+				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
+				int destx = Integer.parseInt(inputsplit[i].substring(0,inputsplit[i].indexOf(" ")));
+				int desty = Integer.parseInt(inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1));
+				if (destx >= 0 && destx < dimensions && desty >=0 && desty < dimensions){
+					destinationx = destx; 
+					destinationy = desty; 
 				}else{
-					record.append("There's already something here...\n");
+					record.append("Those are invalid coordinates!\n");
 				}
-			}else{
-				record.append("I don't have anything to put down!\n");
+			}else if(inputsplit[i].contains("pick up")){
+				pickuppending = true;
+			}else if(inputsplit[i].contains("put down")){
+				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
+				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
+				int whichbackpack = Integer.parseInt(inputsplit[i]);
+				if (whichbackpack >= 0 && whichbackpack < alex.getBackpack().size()){
+					putdownpending = whichbackpack;
+				}else{
+					record.append("I don't have that!\n");
+				}
 			}
 		}
 	}
@@ -292,6 +291,15 @@ public class ALExGUI {
 					record.append("There's nothing here to pick up!\n");
 				}
 				pickuppending = false;
+			}
+			
+			if (putdownpending != -1 && ALExx == destinationx && ALExy == destinationy){
+				if(alex.getEnviron().getStuff()[ALExx][ALExy] == null){
+					alex.putDown(alex.getItem(putdownpending));
+				}else{
+					record.append("This space is already full...\n");
+				}
+				putdownpending = -1;
 			}
 			
 			ALExx = alex.getX();
