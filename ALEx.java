@@ -17,13 +17,21 @@ public class ALEx{
 	private ArrayList<String> colors; 
 	private ArrayList<String> shapes;
 
-	private String def_colors[] = {"red", "orange", "yellow", "green", "blue", "lightblue", "purple", "pink", "brown", "gray", "black"}; 
-	private String def_shapes[] = {"circle", "moon", "square", "star", "triangle"};
+	private ArrayList<String> pos_words; 
 
 	private ArrayList<String> prevcommands;
 	
 	public ALEx (int dim) {
-		
+		pos_words = new ArrayList<String>(); 
+		pos_words.add("up"); 
+		pos_words.add("north"); 
+		pos_words.add("west"); 
+		pos_words.add("south"); 
+		pos_words.add("east"); 
+		pos_words.add("down"); 
+		pos_words.add("left"); 
+		pos_words.add("right"); 
+
 		move_verbs = new ArrayList<String>();
 		move_verbs.add("walk");
 		move_verbs.add("go");
@@ -107,7 +115,8 @@ public class ALEx{
 				String[] words = clauses.get(j).split(" ");
 
 				ArrayList<String> processedwords = processWords(words);
-		
+				for (int i = 0; i<processedwords.size(); i++) System.out.println("processed " + processedwords.get(i));
+
 				String verb = "";
 				if (hasMoveVerb(processedwords))
 					verb = "move";
@@ -117,8 +126,6 @@ public class ALEx{
 					verb = "put down";
 
 				System.out.println("Found verb: " + verb);
-
-				for (int i = 0; i<processedwords.size(); i++) System.out.println("processed " + processedwords.get(i));
 			
 				boolean all = false; //contains special keyword "all"
 				String color = "";
@@ -141,6 +148,19 @@ public class ALEx{
 						int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
 						int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
 						dest = new Coord(destx, desty);
+					}
+					if(pos_words.contains(processedwords.get(i))) {
+						int destx = this.x; 
+						int desty = this.y; 
+						if(processedwords.get(i).equals("north") || processedwords.get(i).equals("up")) 
+							desty = this.y-1; 
+						else if(processedwords.get(i).equals("west") || processedwords.get(i).equals("left"))
+							destx = this.x-1; 
+						else if(processedwords.get(i).equals("down") || processedwords.get(i).equals("south"))
+							desty = this.y+1;
+						else
+							destx = this.x+1; 
+						dest = new Coord(destx, desty); 
 					}
 				} 
 
@@ -286,7 +306,12 @@ public class ALEx{
 			}else if (words[i].equals("move") && words[i+1].equals("to")){ 
 				processedwords.add("moveto");
 				words[i+1] = "";
-			}else if (words[i].matches("[0-9]+") && words[i+1].matches("[0-9]+")){
+			} else if(words[i].equals("move") && pos_words.contains(words[i+1])) {
+				processedwords.add("moveto");
+				processedwords.add(words[i+1]);
+				words[i+1] = ""; 
+			}
+			else if (words[i].matches("[0-9]+") && words[i+1].matches("[0-9]+")){
 				processedwords.add("coord " + words[i] + " " + words[i+1]);
 				words[i+1] = "";
 			}else if (words[i].matches("[0-9]+,") && words[i+1].matches("[0-9]+")){
@@ -299,11 +324,12 @@ public class ALEx{
 				processedwords.add(words[i]);
 			}
 		}
-		
+
 		if(!words[words.length-1].equals("")) {
 			if(words[words.length-1].matches("[0-9]+,[0-9]+")) {
 				processedwords.add("coord" + words[words.length-1].substring(0,words[words.length-1].indexOf(",")) + " " + words[words.length-1].substring(words[words.length-1].indexOf(",")+1));
 			}else{
+				System.out.println("got ehre"); 
 				processedwords.add(words[words.length-1]);
 			}
 		}
