@@ -1,4 +1,4 @@
-ALEx
+ ALEx
 ====
 Group: Grace, Lizzie, Ruby, and the smelly and dangerous and quite lovable wumpus
 
