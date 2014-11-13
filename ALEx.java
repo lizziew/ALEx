@@ -16,12 +16,16 @@ public class ALEx{
 
 	private ArrayList<String> colors; 
 	private ArrayList<String> shapes;
-
+	
 	private ArrayList<String> pos_words; 
+
+	private String def_colors[] = {"red", "orange", "yellow", "green", "blue", "lightblue", "purple", "pink", "brown", "gray", "black"}; 
+	private String def_shapes[] = {"circle", "moon", "square", "star", "triangle"};
 
 	private ArrayList<String> prevcommands;
 	
 	public ALEx (int dim) {
+		
 		pos_words = new ArrayList<String>(); 
 		pos_words.add("up"); 
 		pos_words.add("north"); 
@@ -31,7 +35,7 @@ public class ALEx{
 		pos_words.add("down"); 
 		pos_words.add("left"); 
 		pos_words.add("right"); 
-
+		
 		move_verbs = new ArrayList<String>();
 		move_verbs.add("walk");
 		move_verbs.add("go");
@@ -44,7 +48,7 @@ public class ALEx{
 		pickup_verbs.add("pickup");
 		pickup_verbs.add("carry");
 		pickup_verbs.add("transport");
-		pickup_verbs.add("move");
+		pickup_verbs.add("move"); 
 		pickup_verbs.add("grab");
 
 		//need to account for "carry object from here to there"		
@@ -95,6 +99,7 @@ public class ALEx{
 		s=s.toLowerCase();
 		ArrayList<String> clauses = toClauses(s);
 		
+		//then go through each clause and convert it to a command
 		for (int j = 0; j<clauses.size(); j++){
 			
 			if (!clauses.get(j).equals(" ")){
@@ -115,8 +120,7 @@ public class ALEx{
 				String[] words = clauses.get(j).split(" ");
 
 				ArrayList<String> processedwords = processWords(words);
-				for (int i = 0; i<processedwords.size(); i++) System.out.println("processed " + processedwords.get(i));
-
+		
 				String verb = "";
 				if (hasMoveVerb(processedwords))
 					verb = "move";
@@ -126,11 +130,14 @@ public class ALEx{
 					verb = "put down";
 
 				System.out.println("Found verb: " + verb);
+
+				for (int i = 0; i<processedwords.size(); i++) System.out.println("processed " + processedwords.get(i));
 			
 				boolean all = false; //contains special keyword "all"
 				String color = "";
 				String shape = "";
 				Coord dest = null;
+				String dir = "";
 			
 				for (int i = 0; i<processedwords.size(); i++){
 					if (colors.contains(processedwords.get(i))){
@@ -147,65 +154,46 @@ public class ALEx{
 						inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
 						int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
 						int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
+						System.out.println("GOT COORD " + destx + " " + desty);
 						dest = new Coord(destx, desty);
 					}
 					if(pos_words.contains(processedwords.get(i))) {
-						int destx = this.x; 
-						int desty = this.y; 
+						
 						if(processedwords.get(i).equals("north") || processedwords.get(i).equals("up")) 
-							desty = this.y-1; 
+							dir = "n"; 
 						else if(processedwords.get(i).equals("west") || processedwords.get(i).equals("left"))
-							destx = this.x-1; 
+							dir = "w";
 						else if(processedwords.get(i).equals("down") || processedwords.get(i).equals("south"))
-							desty = this.y+1;
+							dir = "s";
 						else
-							destx = this.x+1; 
-						dest = new Coord(destx, desty); 
+							dir = "e";
 					}
-				} 
-
-				ArrayList<Coord> coord_list = new ArrayList<Coord>(); 
-				if(dest == null) {  
-					coord_list = findItem(color, shape);
-					if(coord_list.size() > 0) dest = coord_list.get(0); 
 				}
 
-				//based on input, send back a cmd to GUI
-				if(verb.equals("move") && coord_list.size() > 1) 
-					rtn = rtn + "!I don't know which " + color + " " + shape + " you're referring to."; 
-				else if (verb.equals("move") && dest != null) {
-					rtn = rtn + ("move " + dest.getL() + " " + dest.getR());
+				//if the verb is move, send back thing we're moving to, or coords
+				if(verb.equals("move") && dest == null && !color.equals("") && !shape.equals("")){
+					rtn = rtn + "move " + color + " " + shape;
+				}else if (verb.equals("move") && dest != null) {
+					rtn = rtn + "move " + dest.getL() + " " + dest.getR();
+				}else if (verb.equals("move") && !dir.equals("")){
+					rtn = rtn + "move " + dir;
 				}
-				else if(verb.equals("move") && coord_list.size() == 0)
-					rtn = rtn + "!I don't see any " + color + " " + shape + "s"; 
-
 		
+				//if verb is pick up, send back thing we're picking up, or coords
 				if (verb.equals("pick up"))
 				{
-					if (coord_list.size() > 1)
-						rtn = rtn + "!I don't know which " + color + " " + shape + " you're referring to.";
-					else if (coord_list.size() == 0) 
-						rtn = rtn + "!I don't see any " + color + " " + shape + "s"; 
-					else if (dest != null) 
-						rtn = rtn + ("move " + dest.getL() + " " + dest.getR() + "|pick up");
+					if (dest == null && !color.equals("") && !shape.equals("")){
+						rtn = rtn + "pick up " + color + " " + shape;
+					}else if(dest != null){
+						rtn = rtn + "pick up " + dest.getL() + " " + dest.getR();
+					}
 				}
 				
-				//check if we have it in the backpack, and if so, drop it
+				//if the verb is put down, send back put down + the color and shape
 				if (verb.equals("put down"))
 				{
-					if (hasItem(new Item(-1, -1, color,shape)) != -1){
-						if (dest != null){
-							//moves to correct location, then drops it
-							//(putdown takes item's index in the backpack)
-							rtn = rtn + ("move " + dest.getL() + " " + dest.getR() +"|put down " + hasItem(new Item(-1,-1,color,shape)));
-						}else{
-							rtn = rtn + ("put down " + hasItem(new Item(-1,-1,color,shape)));
-						}
-					}else{
-						rtn = rtn + "!I'm not carrying a " + color + " " + shape;
-					}	
+					rtn = rtn + "put down " + color + " " + shape;
 				}
-			
 			}	
 		
 		}
@@ -214,7 +202,7 @@ public class ALEx{
 		return rtn;
 	}
 	
-	private ArrayList<Coord> findItem(String color, String shape){
+	public ArrayList<Coord> findItem(String color, String shape){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 
 		if(color == "" && shape == "")
@@ -270,22 +258,35 @@ public class ALEx{
 		
 		//first split by periods and semicolons
 		String[] sentences = s.split("[\\.;]");
-
-		//then for each sentence, go through and split around "and" (or equivalent of "and")
+		
+		//then for each one, go through and split around "and"
+		ArrayList<String> prertn = new ArrayList<String>();
 		for (int i = 0; i<sentences.length; i++){
 			//split around and...
-			String[] ands = sentences[i].split("and|then");
-			//add the first one: we want the rest to start with 'and' still so the parser knows more easily to look back
-			for(int j = 0; j < ands.length; j++) {
-				if(j == 0)
-					rtn.add(ands[j]);
-				else 
-					rtn.add("and " + ands[j]); 
+			String[] ands = sentences[i].split("and");
+			//add the first one
+			prertn.add(ands[0]);
+			//we want the rest to start with 'and' still so the parser knows more easily to look back
+			for (int j = 1; j<ands.length; j++){
+				prertn.add("and" + ands[j]);
 			}
 		}
-
-		for(int i = 0; i < rtn.size(); i++)
-			System.out.println("clauses split: " + rtn.get(i)); 
+		
+		//then split around "then"
+		for (int i = 0; i<prertn.size(); i++){
+			//split around then...
+			String[] thens = sentences[i].split("then");
+			//add the first one
+			rtn.add(thens[0]);
+			//we want the rest to start with 'then' still so the parser knows more easily to look back
+			for (int j = 1; j<thens.length; j++){
+				rtn.add("then" + thens[j]);
+			}
+		}
+		
+		for (int i = 0; i<rtn.size(); i++){
+			System.out.println("clauses split " + rtn.get(i));
+		}
 		
 		return rtn;
 	}
@@ -306,12 +307,7 @@ public class ALEx{
 			}else if (words[i].equals("move") && words[i+1].equals("to")){ 
 				processedwords.add("moveto");
 				words[i+1] = "";
-			} else if(words[i].equals("move") && pos_words.contains(words[i+1])) {
-				processedwords.add("moveto");
-				processedwords.add(words[i+1]);
-				words[i+1] = ""; 
-			}
-			else if (words[i].matches("[0-9]+") && words[i+1].matches("[0-9]+")){
+			}else if (words[i].matches("[0-9]+") && words[i+1].matches("[0-9]+")){
 				processedwords.add("coord " + words[i] + " " + words[i+1]);
 				words[i+1] = "";
 			}else if (words[i].matches("[0-9]+,") && words[i+1].matches("[0-9]+")){
@@ -324,12 +320,11 @@ public class ALEx{
 				processedwords.add(words[i]);
 			}
 		}
-
+		
 		if(!words[words.length-1].equals("")) {
 			if(words[words.length-1].matches("[0-9]+,[0-9]+")) {
 				processedwords.add("coord" + words[words.length-1].substring(0,words[words.length-1].indexOf(",")) + " " + words[words.length-1].substring(words[words.length-1].indexOf(",")+1));
 			}else{
-				System.out.println("got ehre"); 
 				processedwords.add(words[words.length-1]);
 			}
 		}
@@ -341,8 +336,12 @@ public class ALEx{
 	{
 		for (int i = 0; i < s.size(); i++)
 		{
-			if (move_verbs.contains(s.get(i)))
+			if (move_verbs.contains(s.get(i)))			//fairly straightforward, unless...
 				return true;
+			if (s.get(i).equals("move"))			//the verb is move, in which case we make sure it's "move left" or "move north" rather than "move the green square" 
+				if (i < s.size()-1)
+					if (s.get(i+1).equals("to") || pos_words.contains(s.get(i+1)))
+						return true;
 		}
 		return false;
 	}
@@ -365,7 +364,14 @@ public class ALEx{
 					return true;
 			}
 			if (pickup_verbs.contains(s.get(i)))
-				return true;
+				if (s.get(i).equals("move")){
+					if (i<s.size()-1)
+						if (!(s.get(i+1).equals("to") || pos_words.contains(s.get(i+1))))
+							return true;
+					
+				}else{
+					return true;
+				}
 		}
 		return false;
 	}
