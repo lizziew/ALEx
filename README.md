@@ -56,5 +56,5 @@ Todo:
 * negative commands (do not go to the blue star) Ignore everything in that clause --> DONE 
 * store information between commands and answer back (pick up blue star...which blue star...the one at 3 3) Keep a list of previous commands, split by clause. 
 * deal with multiple verbs like "I think you should go PICK UP the ..." (interpreting it as "pick up" rather than "move")
-
+* hitting "Enter" makes it work, so we don't have to click the "Go" button, and showing user's previous cmnds in GUI
 
