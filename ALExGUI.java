@@ -37,10 +37,9 @@ public class ALExGUI {
 	JPanel bottomhalf;					//Contains components other than the graphicspanel
 	int ALExx = 0;						//Alex's starting x and y coords
 	int ALExy = 0;
-	int destinationx = 0;				//Alex's current destination x
-	int destinationy = 0;				//current destination y
-	boolean pickuppending = false; 				//is alex on his way to pick something up? 
-	int putdownpending = -1;			//is alex on the way to put down any object, and if so which?
+	
+	ArrayList<String> todo;				//current pending commands
+	
 	BufferedImage alexsprite; 			//Alex's sprite image
 	int columnwidth;					//will become the size of the graphicspanel divided by the number of columns, for drawing purposes
 	ALEx alex; 							//Alex.
@@ -60,8 +59,11 @@ public class ALExGUI {
 		
 		alex = new ALEx(dimensions);
 		
+		todo = new ArrayList<String>();
+		
 		try {														//Reading in the multitudinous sprites
-		    alexsprite = ImageIO.read(new File("sprite.png"));
+			
+			alexsprite = ImageIO.read(new File("sprite.png"));
 		    
 		    itemsprites[0][0] = ImageIO.read(new File("itemsprites/circle-red.png"));
 		    itemsprites[0][1] = ImageIO.read(new File("itemsprites/circle-orange.png"));
@@ -190,7 +192,6 @@ public class ALExGUI {
 		frame.setSize(700, 700);
 		frame.setVisible(true);
 		
-		
 	}
 	
 	private void processInput(String inputtext){		//Processes and acts on a string of text inputted
@@ -205,24 +206,23 @@ public class ALExGUI {
 			if (inputsplit[i].startsWith("!")){
 				record.append(inputsplit[i].substring(1) + "\n");
 			}else if (inputsplit[i].contains("move")){
-				pickuppending = false;
 				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
 				int destx = Integer.parseInt(inputsplit[i].substring(0,inputsplit[i].indexOf(" ")));
 				int desty = Integer.parseInt(inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1));
 				if (destx >= 0 && destx < dimensions && desty >=0 && desty < dimensions){
-					destinationx = destx; 
-					destinationy = desty; 
+					todo.add(destx + " " + desty);
 				}else{
 					record.append("Those are invalid coordinates!\n");
 				}
 			}else if(inputsplit[i].contains("pick up")){
-				pickuppending = true;
+				todo.add("pickup"); 
 			}else if(inputsplit[i].contains("put down")){
 				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
 				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
 				int whichbackpack = Integer.parseInt(inputsplit[i]);
-				if (whichbackpack >= 0 && whichbackpack < alex.getBackpack().size()){
-					putdownpending = whichbackpack;
+				if (whichbackpack >=0 && whichbackpack < alex.getBackpack().size()){
+					Item drop = alex.getBackpack().get(whichbackpack);
+					todo.add("putdown " + drop.getColor() + " " + drop.getShape());
 				}else{
 					record.append("I don't have that!\n");
 				}
@@ -251,57 +251,67 @@ public class ALExGUI {
 		
 		public void paintComponent(Graphics g) {
 			
-			//Move alex towards the destination, if it is the correct step (only does this 1/8 times) 
+			// 1/8 milliseconds, progress alex's current objective
 			
-			if (stepcounter == 0){
+			if (stepcounter == 0 && todo.size() != 0){
 				
-				if (ALExx != destinationx || ALExy != destinationy){
-					if (ALExx != destinationx && ALExy != destinationy){
-						if(ALExy < destinationy){
-							alex.setY(ALExy + 1);
-						}else{
-							alex.setY(ALExy - 1);
-						}
-					}else if (ALExx != destinationx){
-						if(ALExx < destinationx){
-							alex.setX(ALExx + 1);
-						}else{
-							alex.setX(ALExx - 1);
-						}
-					}else if (ALExy != destinationy){
-						if(ALExy < destinationy){
-							alex.setY(ALExy + 1);
-						}else{
-							alex.setY(ALExy - 1);
-						}
+				String current = todo.get(0);
+				if (current.contains("pickup")){
+					if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
+						alex.pickUp();
+					}else{
+						record.append("There's nothing here to pick up!\n");
 					}
-					
+					todo.remove(0);
+				}else if (current.contains("putdown")){
+					if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
+						current = current.substring(current.indexOf(" ") + 1);
+						String color = current.substring(0,current.indexOf(" "));
+						String shape = current.substring(current.indexOf(" ") + 1);	
+						if (alex.hasItem(new Item(-1,-1,color,shape)) != -1){
+							alex.putDown(new Item(-1,-1,color,shape));
+						}else{
+							record.append("I don't have one of those to put down...\n");
+						}
+					}else{
+						record.append("This space is already full.\n");
+					}
+					todo.remove(0);
+				}else{
+					String movetoparse = todo.get(0);
+					int destx = Integer.parseInt(movetoparse.substring(0,movetoparse.indexOf(" ")));
+					int desty = Integer.parseInt(movetoparse.substring(movetoparse.indexOf(" ") + 1));
+					if (ALExx != destx || ALExy != desty){
+						if (ALExx != destx && ALExy != desty){
+							if(ALExy < desty){
+								alex.setY(ALExy + 1);
+							}else{
+								alex.setY(ALExy - 1);
+							}
+						}else if (ALExx != destx){
+							if(ALExx < destx){
+								alex.setX(ALExx + 1);
+							}else{
+								alex.setX(ALExx - 1);
+							}
+						}else if (ALExy != desty){
+							if(ALExy < desty){
+								alex.setY(ALExy + 1);
+							}else{
+								alex.setY(ALExy - 1);
+							}
+						}
+					}else{
+						todo.remove(0);
+					}
 				}
 			}
-			
+
 			stepcounter++;
 			if (stepcounter == 8){
-				stepcounter = 0;
+				stepcounter = 0; 
 			}
-			
-			if (pickuppending && ALExx == destinationx && ALExy == destinationy){
-				if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
-					alex.pickUp();
-				}else{
-					record.append("There's nothing here to pick up!\n");
-				}
-				pickuppending = false;
-			}
-			
-			if (putdownpending != -1 && ALExx == destinationx && ALExy == destinationy){
-				if(alex.getEnviron().getStuff()[ALExx][ALExy] == null){
-					alex.putDown(alex.getItem(putdownpending));
-				}else{
-					record.append("This space is already full...\n");
-				}
-				putdownpending = -1;
-			}
-			
+
 			ALExx = alex.getX();
 			ALExy = alex.getY();
 			
