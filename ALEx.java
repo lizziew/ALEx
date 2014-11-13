@@ -140,7 +140,6 @@ public class ALEx{
 						inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
 						int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
 						int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
-						System.out.println("GOT COORD " + destx + " " + desty);
 						dest = new Coord(destx, desty);
 					}
 				} 
@@ -155,7 +154,6 @@ public class ALEx{
 				if(verb.equals("move") && coord_list.size() > 1) 
 					rtn = rtn + "!I don't know which " + color + " " + shape + " you're referring to."; 
 				else if (verb.equals("move") && dest != null) {
-					System.out.println("aljsfdhlsadhflkjadsfjlakjdsf");
 					rtn = rtn + ("move " + dest.getL() + " " + dest.getR());
 				}
 				else if(verb.equals("move") && coord_list.size() == 0)
@@ -168,7 +166,7 @@ public class ALEx{
 						rtn = rtn + "!I don't know which " + color + " " + shape + " you're referring to.";
 					else if (coord_list.size() == 0) 
 						rtn = rtn + "!I don't see any " + color + " " + shape + "s"; 
-					else if (dest != null)
+					else if (dest != null) 
 						rtn = rtn + ("move " + dest.getL() + " " + dest.getR() + "|pick up");
 				}
 				
@@ -252,35 +250,22 @@ public class ALEx{
 		
 		//first split by periods and semicolons
 		String[] sentences = s.split("[\\.;]");
-		
-		//then for each one, go through and split around "and"
-		ArrayList<String> prertn = new ArrayList<String>();
+
+		//then for each sentence, go through and split around "and" (or equivalent of "and")
 		for (int i = 0; i<sentences.length; i++){
 			//split around and...
-			String[] ands = sentences[i].split("and");
-			//add the first one
-			prertn.add(ands[0]);
-			//we want the rest to start with 'and' still so the parser knows more easily to look back
-			for (int j = 1; j<ands.length; j++){
-				prertn.add("and " + ands[j]);
+			String[] ands = sentences[i].split("and|then");
+			//add the first one: we want the rest to start with 'and' still so the parser knows more easily to look back
+			for(int j = 0; j < ands.length; j++) {
+				if(j == 0)
+					rtn.add(ands[j]);
+				else 
+					rtn.add("and " + ands[j]); 
 			}
 		}
-		
-		//then split around "then"
-		for (int i = 0; i<prertn.size(); i++){
-			//split around then...
-			String[] thens = sentences[i].split("then");
-			//add the first one
-			rtn.add(thens[0]);
-			//we want the rest to start with 'then' still so the parser knows more easily to look back
-			for (int j = 1; j<thens.length; j++){
-				rtn.add("then " + thens[j]);
-			}
-		}
-		
-		for (int i = 0; i<rtn.size(); i++){
-			System.out.println("clauses split " + rtn.get(i));
-		}
+
+		for(int i = 0; i < rtn.size(); i++)
+			System.out.println("clauses split: " + rtn.get(i)); 
 		
 		return rtn;
 	}
