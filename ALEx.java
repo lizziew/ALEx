@@ -20,7 +20,7 @@ public class ALEx{
 	private ArrayList<String> pos_words; 
 
 	private String def_colors[] = {"red", "orange", "yellow", "green", "blue", "lightblue", "purple", "pink", "brown", "gray", "black"}; 
-	private String def_shapes[] = {"circle", "moon", "square", "star", "triangle"};
+	private String def_shapes[] = {"circle", "moon", "crescent", "square", "star", "triangle"};
 
 	private ArrayList<String> prevcommands;
 	
@@ -172,7 +172,7 @@ public class ALEx{
 
 				//if the verb is move, send back thing we're moving to, or coords
 				if(verb.equals("move") && dest == null && !color.equals("") && !shape.equals("")){
-					rtn = rtn + "move " + color + " " + shape;
+					rtn = rtn + "moveto " + color + " " + shape;
 				}else if (verb.equals("move") && dest != null) {
 					rtn = rtn + "move " + dest.getL() + " " + dest.getR();
 				}else if (verb.equals("move") && !dir.equals("")){
@@ -216,12 +216,18 @@ public class ALEx{
 			return rtn; 
 		}
 
-		for (int i=0; i<dimension; i++)
-			for (int j=0; j<dimension; j++)
-				if (world.getStuff()[i][j] != null)
-					if (world.getStuff()[i][j].getColor().equals(color) && world.getStuff()[i][j].getShape().equals(shape))
+		for (int i=0; i<dimension; i++){
+			for (int j=0; j<dimension; j++){
+				if (world.getStuff()[i][j] != null){
+					if (world.getStuff()[i][j].getColor().equals(color) && (world.getStuff()[i][j].getShape().equals(shape) || (world.getStuff()[i][j].getShape().equals("moon") && shape.equals("crescent")))){
 						rtn.add(new Coord(i,j));
+					}
+				}
+			}
+		}
+			
 		return rtn;
+		
 	}
 	
 	private ArrayList<Coord> findColorItem(String c){

@@ -233,15 +233,38 @@ public class ALExGUI {
 			
 			// 1/8 milliseconds, progress alex's current objective
 			
+			for (int i = 0; i<todo.size(); i++){
+				System.out.println(todo.get(i));
+			}
+			
 			if (stepcounter == 0 && todo.size() != 0){
+				
 				
 				String current = todo.get(0);
 				if (current.startsWith("!")){
 					record.append(current.substring(1) + "\n");
+				}else if (current.contains("moveto")){
+					//the command for moving to an item
+
+					//parse the color and shape out of the command
+					String currentcopy = current.substring(current.indexOf(" ") + 1);
+					String color = currentcopy.substring(0, currentcopy.indexOf(" "));
+					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+					
+					todo.remove(0);
+					
+					ArrayList<Coord> coordlist = alex.findItem(color, shape);
+					if (coordlist.size() == 1){
+						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
+					}else if (coordlist.size() == 0){
+						record.append("There aren't any " + color + " " + shape + "s.");
+					}else if (coordlist.size() > 1){
+						record.append("I don't know which " + color + " " + shape + " you mean.");
+					}
+					
 				}else if (current.contains("move")){
 					
 					//is it move [direction] (n,e,s,w) or move [coords]?
-					
 					if (current.contains(" n") || current.contains(" e") || current.contains(" s") || current.contains(" w")){
 						
 						//move in the appropriate direction, if you are not at that edge of the board
@@ -324,7 +347,7 @@ public class ALExGUI {
 					
 					ArrayList<Coord> coordlist = alex.findItem(color, shape);
 					if (coordlist.size() == 1){
-						todo.add(0,"move " + coordlist.get(0).getL() + coordlist.get(0).getR());
+						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 						todo.add(1, "immediatepickup");
 					}else if (coordlist.size() == 0){
 						record.append("There aren't any " + color + " " + shape + "s.");
@@ -357,6 +380,7 @@ public class ALExGUI {
 					}else{
 						alex.pickUp();
 					}
+					todo.remove(0);
 				}
 				
 	
