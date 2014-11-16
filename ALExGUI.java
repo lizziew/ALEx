@@ -204,9 +204,9 @@ public class ALExGUI {
 		
 		//then process each one
 		for (int i = 0; i<inputsplit.length; i++){
-		
-			todo.add(inputsplit[i]);
-	
+			if (!inputsplit[i].equals("")){
+				todo.add(inputsplit[i]);	
+			}
 		}
 	}
 	
@@ -332,6 +332,20 @@ public class ALExGUI {
 					
 				}else if(current.contains("pick up")){
 					
+					if (current.contains("loc")){ //then you are picking up at a destination
+						String currentcopy = current.substring(current.indexOf(" ") + 1);
+						currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+						currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+						
+						int pickupx = Integer.parseInt(currentcopy.substring(0,currentcopy.indexOf(" ")));
+						int pickupy = Integer.parseInt(currentcopy.substring(currentcopy.indexOf(" ") + 1));
+						
+						todo.remove(0);
+						
+						todo.add(0,"move " + pickupx + " " + pickupy);
+						todo.add(1, "immediatepickup");
+					}else{//otherwise an object
+					
 					//parse the color and shape out of the command
 					String currentcopy = current.substring(current.indexOf(" ") + 1);
 					currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
@@ -347,9 +361,10 @@ public class ALExGUI {
 						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 						todo.add(1, "immediatepickup");
 					}else if (coordlist.size() == 0){
-						record.append("There aren't any " + color + " " + shape + "s.");
+						record.append("There aren't any " + color + " " + shape + "s.\n");
 					}else if (coordlist.size() > 1){
-						record.append("I don't know which " + color + " " + shape + " you mean.");
+						record.append("I don't know which " + color + " " + shape + " you mean.\n");
+					}
 					}
 					
 				}else if(current.contains("put down")){
@@ -362,21 +377,33 @@ public class ALExGUI {
 					
 					if (alex.hasItem(new Item(-1, -1, color, shape)) != -1){
 						if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
-							record.append("There's already something here.");
+							record.append("There's already something here.\n");
 						}else{
 							alex.putDown(new Item(-1,-1,color,shape));
 						}		
 					}else{
-						record.append("I don't have one of those to put down.");
+						record.append("I don't have one of those to put down.\n");
 					}
 					todo.remove(0);
 					
 				}else if (current.equals("immediatepickup")){
 					//immediatepickup is a command the GUI appends to its own todo list to tell it to pick up whatever object is at its location
 					if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
-						record.append("There's nothing here to pick up!");
+						record.append("There's nothing here to pick up!\n");
 					}else{
 						alex.pickUp();
+					}
+					todo.remove(0);
+				}else if (current.equals("immediateputdown")){
+					//immediateputdown just puts down whatever the first object alex is holding is
+					if (alex.getBackpack().size() != 0){
+						if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
+							record.append("There's already something here.\n");
+						}else{
+							alex.putDown(alex.getBackpack().get(0));
+						}
+					}else{
+						record.append("I don't have anything to put down...\n");
 					}
 					todo.remove(0);
 				}
