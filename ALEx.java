@@ -104,21 +104,16 @@ public class ALEx{
 			
 			for (int i = 0; i<prevcommands.size(); i++){System.out.println(prevcommands.get(i));}
 			
-			if (!clauses.get(j).equals(" ")){
-			
+			if (!(clauses.get(j).equals(" ")||clauses.get(j).contains(" no ") || clauses.get(j).contains(" not ") || clauses.get(j).contains("n't"))){
+				//^ignores blank clauses and clauses containing negatives
+				
 				if (!rtn.equals("")){
 					rtn = rtn + "|";
 				}
 			
 				prevcommands.add(clauses.get(j));
+					
 				
-				//dealing with negatives
-				if (clauses.get(j).contains(" no ") || clauses.get(j).contains(" not ") || clauses.get(j).contains("n't"))
-				{
-					System.out.println("I am confused...");
-					return "!I don't quite understand what you want me to do.";
-				}
-
 				String[] words = clauses.get(j).split(" ");
 
 				ArrayList<String> processedwords = processWords(words);
@@ -197,6 +192,8 @@ public class ALEx{
 					rtn = rtn + "put down " + color + " " + shape;
 				}
 			}	
+		
+			
 		
 		}
 		
