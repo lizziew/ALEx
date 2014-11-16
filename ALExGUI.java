@@ -233,9 +233,6 @@ public class ALExGUI {
 			
 			// 1/8 milliseconds, progress alex's current objective
 			
-			for (int i = 0; i<todo.size(); i++){
-				System.out.println(todo.get(i));
-			}
 			
 			if (stepcounter == 0 && todo.size() != 0){
 				
@@ -372,6 +369,7 @@ public class ALExGUI {
 					}else{
 						record.append("I don't have one of those to put down.");
 					}
+					todo.remove(0);
 					
 				}else if (current.equals("immediatepickup")){
 					//immediatepickup is a command the GUI appends to its own todo list to tell it to pick up whatever object is at its location

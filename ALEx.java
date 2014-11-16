@@ -102,6 +102,8 @@ public class ALEx{
 		//then go through each clause and convert it to a command
 		for (int j = 0; j<clauses.size(); j++){
 			
+			for (int i = 0; i<prevcommands.size(); i++){System.out.println(prevcommands.get(i));}
+			
 			if (!clauses.get(j).equals(" ")){
 			
 				if (!rtn.equals("")){
@@ -120,18 +122,18 @@ public class ALEx{
 				String[] words = clauses.get(j).split(" ");
 
 				ArrayList<String> processedwords = processWords(words);
-		
+				for (int i = 0; i<processedwords.size(); i++) System.out.println("processed " + processedwords.get(i));
+				
 				String verb = "";
 				if (hasMoveVerb(processedwords))
 					verb = "move";
-				else if (hasPickUpVerb(processedwords))
+				if (hasPickUpVerb(processedwords))
 					verb = "pick up";
-				else if (hasPutDownVerb(processedwords))
+				if (hasPutDownVerb(processedwords))
 					verb = "put down";
 
 				System.out.println("Found verb: " + verb);
 
-				for (int i = 0; i<processedwords.size(); i++) System.out.println("processed " + processedwords.get(i));
 			
 				boolean all = false; //contains special keyword "all"
 				String color = "";
@@ -261,6 +263,8 @@ public class ALEx{
 		
 		//remove commas
 		s = s.replace(",","");
+		s = s.replace("(","");
+		s = s.replace(")","");
 		
 		//first split by periods and semicolons
 		String[] sentences = s.split("[\\.;]");
@@ -270,6 +274,7 @@ public class ALEx{
 		for (int i = 0; i<sentences.length; i++){
 			//split around and...
 			String[] ands = sentences[i].split("and");
+			
 			//add the first one
 			prertn.add(ands[0]);
 			//we want the rest to start with 'and' still so the parser knows more easily to look back
@@ -281,7 +286,7 @@ public class ALEx{
 		//then split around "then"
 		for (int i = 0; i<prertn.size(); i++){
 			//split around then...
-			String[] thens = sentences[i].split("then");
+			String[] thens = prertn.get(i).split("then");
 			//add the first one
 			rtn.add(thens[0]);
 			//we want the rest to start with 'then' still so the parser knows more easily to look back
