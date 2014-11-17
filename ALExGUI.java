@@ -233,7 +233,6 @@ public class ALExGUI {
 			
 			// 1/8 milliseconds, progress alex's current objective
 			
-			
 			if (stepcounter == 0 && todo.size() != 0){
 				String current = todo.get(0);
 				if (current.startsWith("!")){
@@ -266,33 +265,64 @@ public class ALExGUI {
 					if (current.contains(" n") || current.contains(" e") || current.contains(" s") || current.contains(" w")){
 						
 						//move in the appropriate direction, if you are not at that edge of the board
-						
-						if (current.contains(" n")){
-							if (ALExy != 0){
-								alex.setY(ALExy - 1);
-							}else{
-								record.append("I can't go any further north.\n");
-							}
-						}else if (current.contains(" e")){
-							if (ALExx != dimensions-1){
-								alex.setX(ALExx + 1);
-							}else{
-								record.append("I can't go any further east.\n");
-							}
-						}else if (current.contains(" s")){
-							if (ALExy != dimensions-1){
-								alex.setY(ALExy + 1);
-							}else{
-								record.append("I can't go any further south.\n");
-							}
-						}else if (current.contains(" w")){
-							if (ALExx != 0){
-								alex.setX(ALExx - 1);
-							}else{
-								record.append("I can't go any further west.\n");
-							}
+						int i = 0; 
+						if(current.contains(" n")) {
+							System.out.println("got to the north");
+							for(i = 0; i < current.length()-1; i++) 
+								if(current.substring(i, i+2).equals(" n")) {
+									if(ALExy != 0) {
+										ALExy--; 
+										alex.setY(ALExy); 
+									}
+									else {
+										record.append("I can't go any further north.\n");
+										break; 
+									}
+								}
 						}
-						
+						else if(current.contains(" e")) {
+							System.out.println("got to the east");
+							for(i = 0; i < current.length()-1; i++) 
+								if(current.substring(i, i+2).equals(" e")) {
+									if(ALExx != dimensions-1) {
+										ALExx++; 
+										alex.setX(ALExx); 
+									}
+									else {
+										record.append("I can't go any further east.\n");
+										break; 
+									}
+								}
+						}
+						else if(current.contains(" s")) {
+							System.out.println("got to the south");
+							for(i = 0; i < current.length()-1; i++) 
+								if(current.substring(i, i+2).equals(" s")) {
+									if(ALExy != dimensions-1) {
+										ALExy++; 
+										alex.setY(ALExy); 
+									}
+									else {
+										record.append("I can't go any further south.\n");
+										break; 
+									}
+								}
+						}
+						else if(current.contains(" w")) {
+							System.out.println("Got to the west"); 
+							for(i = 0; i < current.length()-1; i++) 
+								if(current.substring(i, i+2).equals(" w")) {
+									if(ALExx != 0) {
+										ALExx--; 
+										alex.setX(ALExx); 
+									}
+									else {
+										record.append("I can't go any further west.\n");
+										break; 
+									}
+								}
+						}
+
 						todo.remove(0);
 						
 					}else{
