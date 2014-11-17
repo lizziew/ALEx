@@ -86,7 +86,7 @@ public class ALEx{
 		shapes.add("square");
 		shapes.add("star");
 		shapes.add("triangle");
-		
+
 		prevcommands = new ArrayList<String>();
 		
 		x = 0;
@@ -107,7 +107,6 @@ public class ALEx{
 		
 		//then go through each clause and convert it to a command
 		for (int j = 0; j<clauses.size(); j++){
-			
 			if (!(clauses.get(j).equals(" ")||clauses.get(j).contains(" no ") || clauses.get(j).contains(" not ") || clauses.get(j).contains("n't"))){
 				//^ignores blank clauses and clauses containing negatives
 				
@@ -136,6 +135,8 @@ public class ALEx{
 				String shape = "";
 				Coord dest = null;
 				String dir = "";
+
+				int num_moves = 1; 
 			
 				for (int i = 0; i<processedwords.size(); i++){
 					if (colors.contains(processedwords.get(i))){
@@ -156,7 +157,7 @@ public class ALEx{
 						dest = new Coord(destx, desty);
 					}
 					if(pos_words.contains(processedwords.get(i))) {
-						
+						verb = "move"; 
 						if(processedwords.get(i).equals("north") || processedwords.get(i).equals("up")) 
 							dir = "n"; 
 						else if(processedwords.get(i).equals("west") || processedwords.get(i).equals("left"))
@@ -166,6 +167,8 @@ public class ALEx{
 						else
 							dir = "e";
 					}
+					if(processedwords.get(i).matches("[0-9]+")) //move down 2 squares 
+						num_moves = Integer.parseInt(processedwords.get(i)); 
 				}
 
 /////////////////////////////////pikachu   just so i can easily get here
@@ -205,6 +208,10 @@ public class ALEx{
 				}else if (verb.equals("move") && !dir.equals("")){
 					rtn = rtn + "move " + dir;
 					prevcommands.add("move " + dir);
+					for(int i = 1; i < num_moves; i++) {
+						rtn = rtn + "|move " + dir;
+						prevcommands.add("move " + dir);
+					}
 				}
 		
 				//if verb is pick up, send back thing we're picking up, or coords
@@ -366,14 +373,13 @@ public class ALEx{
 					}else{
 						rtn = rtn + "move " + dest.getL() + " " + dest.getR();
 					}
-				}else if (verb.equals("") && dir!= null){	//direction present but not verb. assume it is move.
+				}else if (verb.equals("") && !dir.equals("")){	//direction present but not verb. assume it is move.
 					rtn = rtn + "move " + dir;
 					prevcommands.add("move " + dir);
+				}else if(verb.equals("") && dir.equals("")) {
+					rtn = "unknown"; 
 				}
 			}	
-		
-			
-		
 		}
 		
 		System.out.println("Here's what's being sent to GUI: " + rtn);

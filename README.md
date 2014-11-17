@@ -48,16 +48,27 @@ Things to consider when understanding commands:
 	*	Translate human spellings ("light blue") as ALEx spellings ("lightblue")
 	*	Special cases: pick up ALL stars
 
-Todo: 
+Done: 
 
-*  "pick up"/"put down"/"light blue" --> go to blue star --> item exists/multiple items exist/item doesn't exist --> DONE 
-*  Nov 11 class: respond to other verbs (pick up and put down) --> DONE
-* negative commands (do not go to the blue star) Ignore everything in that clause --> DONE  (used to ignore the whole command rather than just clause, but i fixed it -ruby) 
+*  "pick up"/"put down"/"light blue" --> go to blue star --> item exists/multiple items exist/item doesn't exist 
+*  Nov 11 class: respond to other verbs (pick up and put down) 
+* negative commands (do not go to the blue star) Ignore everything in that clause  (used to ignore the whole command rather than just clause, but i fixed it -ruby) 
 * deal with multiple verbs like "I think you should go PICK UP the ..." (interpreting it as "pick up" rather than "move") —> DONE (just changed the verb finder to if rather than else if, and put pick up after move - so it might find the go, but then it will find the pickup and change verb to that)
-* hitting "Enter" makes it work, so we don't have to click the "Go" button, and showing user's previous cmnds in GUI —> DONE
+* hitting "Enter" makes it work, so we don't have to click the "Go" button, and showing user's previous cmnds in GUI 
 * compound commands (go to blue star and pick it up) If not complete command (move + coord, pick up + item, put down + item), then iterate back until we find clause with the missing info -> DONE for everything except examples like “pick up the blue circle and star,” which is understandable given that alex still can’t deal with the ambiguity of having just a shape or a color
-*question: should we split at commas? then “pick up the red circle, blue star and black square” works” 
 * store information between commands and answer back (pick up blue star...which blue star...the one at 3 3) Keep a list of previous commands, split by clause. 
-*”nearest” and so on as descriptors for objects
-*dealing with only having descriptors (“nearest blue thing”) rather than nice color + shape combo
+* cmds like "move 2 squares to the east" etc 
+* saying "i don't understand" to confusing commands rather than ignoring
+
+Todo (some optional due to time constraints): 
+
+* hardcode number words from one to nineteen
+* ”nearest” and so on as descriptors for objects
+* dealing with only having descriptors (“nearest blue thing”) rather than nice color + shape combo
+* move object from [wherever] to [wherever]
+* the 'all' descriptor
+* descriptors like 'nearest,' 'leftmost,' 'above you'...
+* answering questions like 'where is [whatever]'
+* light blue vs. blue ambiguity
+
 
