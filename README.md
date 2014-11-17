@@ -58,9 +58,15 @@ Done:
 * compound commands (go to blue star and pick it up) If not complete command (move + coord, pick up + item, put down + item), then iterate back until we find clause with the missing info -> DONE for everything except examples like “pick up the blue circle and star,” which is understandable given that alex still can’t deal with the ambiguity of having just a shape or a color
 * store information between commands and answer back (pick up blue star...which blue star...the one at 3 3) Keep a list of previous commands, split by clause. 
 * cmds like "move 2 squares to the east" etc 
+* saying "i don't understand" to confusing commands rather than ignoring
 
-Todo: 
+Todo (some optional due to time constraints): 
 
 *”nearest” and so on as descriptors for objects
 *dealing with only having descriptors (“nearest blue thing”) rather than nice color + shape combo
+*move object from [wherever] to [wherever]
+*the 'all' descriptor
+*descriptors like 'nearest,' 'leftmost,' 'above you'...
+*answering questions like 'where is [whatever]'
+
 
