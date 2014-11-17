@@ -62,12 +62,13 @@ Done:
 
 Todo (some optional due to time constraints): 
 
-*hardcode number words from one to nineteen
-*”nearest” and so on as descriptors for objects
-*dealing with only having descriptors (“nearest blue thing”) rather than nice color + shape combo
-*move object from [wherever] to [wherever]
-*the 'all' descriptor
-*descriptors like 'nearest,' 'leftmost,' 'above you'...
-*answering questions like 'where is [whatever]'
+* hardcode number words from one to nineteen
+* ”nearest” and so on as descriptors for objects
+* dealing with only having descriptors (“nearest blue thing”) rather than nice color + shape combo
+* move object from [wherever] to [wherever]
+* the 'all' descriptor
+* descriptors like 'nearest,' 'leftmost,' 'above you'...
+* answering questions like 'where is [whatever]'
+* light blue vs. blue ambiguity
 
 
