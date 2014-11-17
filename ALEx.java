@@ -123,6 +123,9 @@ public class ALEx{
 		String rtn = "";
 		
 		//convert string to lower case and get rid of punctuation; split around periods, "and", "then"
+//Perhaps also split at ? or ! ....
+////I'll try to do it below -Grace
+
 		s=s.toLowerCase();
 
 
@@ -316,16 +319,10 @@ System.out.println("Destination: " + dest.getL() + " " + dest.getR());
 //kittyhawk
 							//put down the last thing in the backpack
 
-							Item stuff = items[items.length-1];
-							for (int i = 0; i<split.length; i++){
-								if (colors.contains(split[i])){
-									color = split[i];
-								}
-								if (shapes.contains(split[i])){
-									shape = split[i];
-								}
-								n++;
-							}
+							String stuff = items.get(items.size()-1).toString();
+							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|put down " + stuff;
+							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|put down " + stuff);
+/*							
 							if (!(color.equals("") || shape.equals(""))){
 								if (shape.equals("crescent")){shape = "moon";}
 								rtn = rtn +  "move " + dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape;
@@ -334,7 +331,7 @@ System.out.println("Destination: " + dest.getL() + " " + dest.getR());
 								rtn = rtn + "immediateputdown";
 								prevcommands.add("immediateputdown");
 							}
-	
+*/	
 						}
 					}
 					else if (!(color.equals("") || shape.equals(""))){
@@ -511,10 +508,14 @@ System.out.println("   Currently finding ambiguous item " );
 		ArrayList<String> rtn = new ArrayList<String>();
 		
 		//remove commas
+//and (), and ? and !
 		s = s.replace(","," ");
 		s = s.replace("(","");
 		s = s.replace(")","");
 		
+		s = s.replace("?","");
+		s = s.replace("!","");
+
 		//first split by periods and semicolons
 		String[] sentences = s.split("[\\.;]");
 		
