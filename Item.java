@@ -103,5 +103,8 @@ public class Item {
 			return false;
 		return true;
 	}
-
+	public String toString()
+	{
+		return "" + color + " " + shape;
+	}
 }
