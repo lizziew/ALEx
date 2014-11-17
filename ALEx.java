@@ -18,6 +18,7 @@ public class ALEx{
 	private ArrayList<String> shapes;
 	
 	private ArrayList<String> pos_words; 
+	private ArrayList<String> num_words; 
 
 	private String def_colors[] = {"red", "orange", "yellow", "green", "blue", "lightblue", "purple", "pink", "brown", "gray", "black"}; 
 	private String def_shapes[] = {"circle", "moon", "crescent", "square", "star", "triangle"};
@@ -40,6 +41,28 @@ public class ALEx{
 		pos_words.add("left"); 
 		pos_words.add("right"); 
 		
+		num_words = new ArrayList<String>(); 
+		num_words.add("zero");
+		num_words.add("one");
+		num_words.add("two");
+		num_words.add("three");
+		num_words.add("four");
+		num_words.add("five");
+		num_words.add("six");
+		num_words.add("seven");
+		num_words.add("eight");
+		num_words.add("nine");
+		num_words.add("ten");
+		num_words.add("eleven");
+		num_words.add("twelve");
+		num_words.add("thirteen");
+		num_words.add("fourteen");
+		num_words.add("fifteen");
+		num_words.add("sixteen");
+		num_words.add("seventeen");
+		num_words.add("eighteen");
+		num_words.add("nineteen");
+
 		move_verbs = new ArrayList<String>();
 		move_verbs.add("walk");
 		move_verbs.add("go");
@@ -144,6 +167,11 @@ public class ALEx{
 					}	
 					if (shapes.contains(processedwords.get(i))){
 						shape = processedwords.get(i);
+					}
+					if(num_words.contains(processedwords.get(i))) {
+						processedwords.set(i, Integer.toString(num_words.indexOf(processedwords.get(i)))); 
+						num_moves = num_words.indexOf(processedwords.get(i)); 
+						System.out.println("stuff " + num_words.indexOf(processedwords.get(i)));
 					}
 					if (processedwords.get(i).equals("all")){
 						all = true;
@@ -536,8 +564,7 @@ System.out.println("   Currently finding ambiguous item " );
 				words[i+1] = "";
 			}else if (words[i].matches("[0-9]+,[0-9]+")){
 				processedwords.add("coord " + words[i].substring(0,words[i].indexOf(",")) + " " + words[i].substring(words[i].indexOf(",")+1));
-			}
-			else if (!words[i].equals("")){
+			}else if (!words[i].equals("")){
 				processedwords.add(words[i]);
 			}
 		}
