@@ -7,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -162,6 +164,7 @@ public class ALExGUI {
 		inputandgo.setLayout(new BorderLayout());
 		
 		input = new JTextField("Input");
+		input.addKeyListener(new KeyHandler());
 		inputandgo.add(input, BorderLayout.CENTER);
 		
 		go = new JButton("GO");
@@ -201,31 +204,8 @@ public class ALExGUI {
 		
 		//then process each one
 		for (int i = 0; i<inputsplit.length; i++){
-		
-			//if it starts with a !, it is meant to be sent immediately to output and not acted on
-			if (inputsplit[i].startsWith("!")){
-				record.append(inputsplit[i].substring(1) + "\n");
-			}else if (inputsplit[i].contains("move")){
-				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
-				int destx = Integer.parseInt(inputsplit[i].substring(0,inputsplit[i].indexOf(" ")));
-				int desty = Integer.parseInt(inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1));
-				if (destx >= 0 && destx < dimensions && desty >=0 && desty < dimensions){
-					todo.add(destx + " " + desty);
-				}else{
-					record.append("Those are invalid coordinates!\n");
-				}
-			}else if(inputsplit[i].contains("pick up")){
-				todo.add("pickup"); 
-			}else if(inputsplit[i].contains("put down")){
-				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
-				inputsplit[i] = inputsplit[i].substring(inputsplit[i].indexOf(" ") + 1);
-				int whichbackpack = Integer.parseInt(inputsplit[i]);
-				if (whichbackpack >=0 && whichbackpack < alex.getBackpack().size()){
-					Item drop = alex.getBackpack().get(whichbackpack);
-					todo.add("putdown " + drop.getColor() + " " + drop.getShape());
-				}else{
-					record.append("I don't have that!\n");
-				}
+			if (!inputsplit[i].equals("")){
+				todo.add(inputsplit[i]);	
 			}
 		}
 	}
@@ -253,58 +233,182 @@ public class ALExGUI {
 			
 			// 1/8 milliseconds, progress alex's current objective
 			
+			
 			if (stepcounter == 0 && todo.size() != 0){
 				
+				
 				String current = todo.get(0);
-				if (current.contains("pickup")){
-					if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
-						alex.pickUp();
-					}else{
-						record.append("There's nothing here to pick up!\n");
-					}
+				if (current.startsWith("!")){
+					record.append(current.substring(1) + "\n");
+				}else if (current.contains("moveto")){
+					//the command for moving to an item
+
+					//parse the color and shape out of the command
+					String currentcopy = current.substring(current.indexOf(" ") + 1);
+					String color = currentcopy.substring(0, currentcopy.indexOf(" "));
+					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+					
 					todo.remove(0);
-				}else if (current.contains("putdown")){
-					if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
-						current = current.substring(current.indexOf(" ") + 1);
-						String color = current.substring(0,current.indexOf(" "));
-						String shape = current.substring(current.indexOf(" ") + 1);	
-						if (alex.hasItem(new Item(-1,-1,color,shape)) != -1){
-							alex.putDown(new Item(-1,-1,color,shape));
-						}else{
-							record.append("I don't have one of those to put down...\n");
-						}
-					}else{
-						record.append("This space is already full.\n");
+					
+					ArrayList<Coord> coordlist = alex.findItem(color, shape);
+					if (coordlist.size() == 1){
+						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
+					}else if (coordlist.size() == 0){
+						record.append("There aren't any " + color + " " + shape + "s.");
+					}else if (coordlist.size() > 1){
+						record.append("I don't know which " + color + " " + shape + " you mean.");
 					}
-					todo.remove(0);
-				}else{
-					String movetoparse = todo.get(0);
-					int destx = Integer.parseInt(movetoparse.substring(0,movetoparse.indexOf(" ")));
-					int desty = Integer.parseInt(movetoparse.substring(movetoparse.indexOf(" ") + 1));
-					if (ALExx != destx || ALExy != desty){
-						if (ALExx != destx && ALExy != desty){
-							if(ALExy < desty){
-								alex.setY(ALExy + 1);
-							}else{
+					
+				}else if (current.contains("move")){
+					
+					//is it move [direction] (n,e,s,w) or move [coords]?
+					if (current.contains(" n") || current.contains(" e") || current.contains(" s") || current.contains(" w")){
+						
+						//move in the appropriate direction, if you are not at that edge of the board
+						
+						if (current.contains(" n")){
+							if (ALExy != 0){
 								alex.setY(ALExy - 1);
+							}else{
+								record.append("I can't go any further north.\n");
 							}
-						}else if (ALExx != destx){
-							if(ALExx < destx){
+						}else if (current.contains(" e")){
+							if (ALExx != dimensions-1){
 								alex.setX(ALExx + 1);
 							}else{
-								alex.setX(ALExx - 1);
+								record.append("I can't go any further east.\n");
 							}
-						}else if (ALExy != desty){
-							if(ALExy < desty){
+						}else if (current.contains(" s")){
+							if (ALExy != dimensions-1){
 								alex.setY(ALExy + 1);
 							}else{
-								alex.setY(ALExy - 1);
+								record.append("I can't go any further south.\n");
+							}
+						}else if (current.contains(" w")){
+							if (ALExx != 0){
+								alex.setX(ALExx - 1);
+							}else{
+								record.append("I can't go any further west.\n");
 							}
 						}
-					}else{
+						
 						todo.remove(0);
+						
+					}else{
+						
+						//checks if the coords are valid, and moves towards them if so
+						
+						String currentcopy = current.substring(current.indexOf(" ") + 1);
+						int destx = Integer.parseInt(currentcopy.substring(0,currentcopy.indexOf(" ")));
+						int desty = Integer.parseInt(currentcopy.substring(currentcopy.indexOf(" ") + 1));
+						if (destx >= 0 && destx < dimensions && desty >=0 && desty < dimensions){
+							if (ALExx != destx || ALExy != desty){
+								if (ALExx != destx && ALExy != desty){
+									if(ALExy < desty){
+										alex.setY(ALExy + 1);
+									}else{
+										alex.setY(ALExy - 1);
+									}
+								}else if (ALExx != destx){
+									if(ALExx < destx){
+										alex.setX(ALExx + 1);
+									}else{
+										alex.setX(ALExx - 1);
+									}
+								}else if (ALExy != desty){
+									if(ALExy < desty){
+										alex.setY(ALExy + 1);
+									}else{
+										alex.setY(ALExy - 1);
+									}
+								}
+							}else{
+								todo.remove(0);
+							}
+						}else{
+							record.append("Those are invalid coordinates!\n");
+						}
 					}
+					
+				}else if(current.contains("pick up")){
+					
+					if (current.contains("loc")){ //then you are picking up at a destination
+						String currentcopy = current.substring(current.indexOf(" ") + 1);
+						currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+						currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+						
+						int pickupx = Integer.parseInt(currentcopy.substring(0,currentcopy.indexOf(" ")));
+						int pickupy = Integer.parseInt(currentcopy.substring(currentcopy.indexOf(" ") + 1));
+						
+						todo.remove(0);
+						
+						todo.add(0,"move " + pickupx + " " + pickupy);
+						todo.add(1, "immediatepickup");
+					}else{//otherwise an object
+					
+					//parse the color and shape out of the command
+					String currentcopy = current.substring(current.indexOf(" ") + 1);
+					currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+					String color = currentcopy.substring(0, currentcopy.indexOf(" "));
+					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+					
+					//check if that exists and if more than one/none exist, and if there's a unique one, go to it
+					
+					todo.remove(0);
+					
+					ArrayList<Coord> coordlist = alex.findItem(color, shape);
+					if (coordlist.size() == 1){
+						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
+						todo.add(1, "immediatepickup");
+					}else if (coordlist.size() == 0){
+						record.append("There aren't any " + color + " " + shape + "s.\n");
+					}else if (coordlist.size() > 1){
+						record.append("I don't know which " + color + " " + shape + " you mean.\n");
+					}
+					}
+					
+				}else if(current.contains("put down")){
+					
+					//check if we have that, and if we do put it down
+					String currentcopy = current.substring(current.indexOf(" ") + 1);
+					currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+					String color = currentcopy.substring(0, currentcopy.indexOf(" "));
+					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
+					
+					if (alex.hasItem(new Item(-1, -1, color, shape)) != -1){
+						if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
+							record.append("There's already something here.\n");
+						}else{
+							alex.putDown(new Item(-1,-1,color,shape));
+						}		
+					}else{
+						record.append("I don't have one of those to put down.\n");
+					}
+					todo.remove(0);
+					
+				}else if (current.equals("immediatepickup")){
+					//immediatepickup is a command the GUI appends to its own todo list to tell it to pick up whatever object is at its location
+					if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
+						record.append("There's nothing here to pick up!\n");
+					}else{
+						alex.pickUp();
+					}
+					todo.remove(0);
+				}else if (current.equals("immediateputdown")){
+					//immediateputdown just puts down whatever the first object alex is holding is
+					if (alex.getBackpack().size() != 0){
+						if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
+							record.append("There's already something here.\n");
+						}else{
+							alex.putDown(alex.getBackpack().get(0));
+						}
+					}else{
+						record.append("I don't have anything to put down...\n");
+					}
+					todo.remove(0);
 				}
+				
+	
 			}
 
 			stepcounter++;
@@ -453,13 +557,37 @@ public class ALExGUI {
 		}
 	}	
 
-	
+	private class KeyHandler implements KeyListener{
+
+		@Override
+		public void keyPressed(KeyEvent arg0) {
+			
+		}
+
+		@Override
+		public void keyReleased(KeyEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent arg0) {
+			if (arg0.getKeyChar() == '\n'){
+				String inputtext = input.getText();
+				record.append(inputtext + "\n");
+				processInput(alex.parseText(inputtext));
+				input.setText("");
+			}
+		}
+		
+	}
 	
 	private class MouseHandler implements MouseListener{	//registers when someone clicks the go button
 		
 		public void mouseClicked(MouseEvent e){
 			if (e.getSource().equals(go)){
 				String inputtext = input.getText();
+				record.append(inputtext + "\n");
 				processInput(alex.parseText(inputtext));
 				input.setText("");
 			}
