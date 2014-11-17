@@ -171,6 +171,12 @@ public class ALEx{
 						num_moves = Integer.parseInt(processedwords.get(i)); 
 				}
 
+
+				if (hasPickUpVerb(processedwords))
+					verb = "pick up";
+				if (hasPutDownVerb(processedwords))
+					verb = "put down";
+
 /////////////////////////////////pikachu   just so i can easily get here
 //if we need clarification, we only need a location
 //Also, we don't need clarification on what to put down.
@@ -259,37 +265,43 @@ public class ALEx{
 		
 
 //pokemon		
+
 				//if the verb is put down, send back put down + the color and shape
 				if (verb.equals("put down"))
 				{
-
 					if (dest != null)
 					{
+
+System.out.println("Color: " + color);
+System.out.println("Shape: " + shape);
+System.out.println("Destination: " + dest.getL() + " " + dest.getR());
+
+
 						if(!(color.equals("") || shape.equals("")))
 						{
-							rtn = "move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape; 
-							prevcommands.add("" + rtn);
+							rtn = rtn + "move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape; 
+							prevcommands.add("move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape);
 						}
 						else
 						{
 							int n = 1;
-							//iterate through previous commands to find an appropriate object
-							while (color.equals("") && shape.equals("") && n<=prevcommands.size()){
-								String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
-								for (int i = 0; i<split.length; i++){
-									if (colors.contains(split[i])){
-										color = split[i];
-									}
-									if (shapes.contains(split[i])){
-										shape = split[i];
-									}
+//kittyhawk
+							//put down the last thing in the backpack
+
+							Item stuff = items[items.length-1];
+							for (int i = 0; i<split.length; i++){
+								if (colors.contains(split[i])){
+									color = split[i];
+								}
+								if (shapes.contains(split[i])){
+									shape = split[i];
 								}
 								n++;
 							}
 							if (!(color.equals("") || shape.equals(""))){
 								if (shape.equals("crescent")){shape = "moon";}
-								rtn = "move " + dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape;
-								prevcommands.add("" + rtn);
+								rtn = rtn +  "move " + dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape;
+								prevcommands.add( "move " + dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape);
 							}else{ //if there still isn't anything, put down whatever you're holding
 								rtn = rtn + "immediateputdown";
 								prevcommands.add("immediateputdown");
@@ -324,7 +336,6 @@ public class ALEx{
 							prevcommands.add("immediateputdown");
 						}
 					}
-					
 				}
 				
 				if (verb.equals("") && !(color.equals("")||shape.equals(""))){
