@@ -24,8 +24,12 @@ public class ALEx{
 
 	private ArrayList<String> prevcommands;
 	
-	public ALEx (int dim) {
+	private boolean needClarification;
 		
+	public ALEx (int dim) {
+
+		needClarification = false;	
+	
 		pos_words = new ArrayList<String>(); 
 		pos_words.add("up"); 
 		pos_words.add("north"); 
@@ -97,6 +101,8 @@ public class ALEx{
 		
 		//convert string to lower case and get rid of punctuation; split around periods, "and", "then"
 		s=s.toLowerCase();
+
+
 		ArrayList<String> clauses = toClauses(s);
 		
 		//then go through each clause and convert it to a command
@@ -162,6 +168,33 @@ public class ALEx{
 					}
 				}
 
+/////////////////////////////////pikachu   just so i can easily get here
+//if we need clarification, we only need a location
+//Also, we don't need clarification on what to put down.
+			if (needClarification)
+			{
+				if (dest == null)
+				{
+					rtn = "" + prevcommands.get(prevcommands.size());
+				}
+				else
+				{
+					if (verb.equals("move"))
+					{
+						rtn = "" + verb + " " + dest.getL() + " " + dest.getR();
+					}
+					else
+					{
+						rtn = "move " + dest.getL() + " " + dest.getR() + "|";
+						rtn = rtn + "pick up " + color + " " + shape;
+					}
+					needClarification = false;	
+				}
+	
+				return rtn;
+			}
+
+
 				//if the verb is move, send back thing we're moving to, or coords
 				if(verb.equals("move") && dest == null && !color.equals("") && !shape.equals("")){
 					rtn = rtn + "moveto " + color + " " + shape;
@@ -216,11 +249,48 @@ public class ALEx{
 						}
 					}
 				}
-				
+		
+
+//pokemon		
 				//if the verb is put down, send back put down + the color and shape
 				if (verb.equals("put down"))
 				{
-					if (!(color.equals("") || shape.equals(""))){
+
+					if (dest != null)
+					{
+						if(!(color.equals("") || shape.equals("")))
+						{
+							rtn = "move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape; 
+							prevcommands.add("" + rtn);
+						}
+						else
+						{
+							int n = 1;
+							//iterate through previous commands to find an appropriate object
+							while (color.equals("") && shape.equals("") && n<=prevcommands.size()){
+								String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
+								for (int i = 0; i<split.length; i++){
+									if (colors.contains(split[i])){
+										color = split[i];
+									}
+									if (shapes.contains(split[i])){
+										shape = split[i];
+									}
+								}
+								n++;
+							}
+							if (!(color.equals("") || shape.equals(""))){
+								if (shape.equals("crescent")){shape = "moon";}
+								rtn = "move " + dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape;
+								prevcommands.add("" + rtn);
+							}else{ //if there still isn't anything, put down whatever you're holding
+								rtn = rtn + "immediateputdown";
+								prevcommands.add("immediateputdown");
+							}
+	
+						}
+					}
+					else if (!(color.equals("") || shape.equals(""))){
 						rtn = rtn + "put down " + color + " " + shape;
 						prevcommands.add("put down " + color + " " + shape);
 					}else{
@@ -309,6 +379,34 @@ public class ALEx{
 		System.out.println("Here's what's being sent to GUI: " + rtn);
 		return rtn;
 	}
+
+
+
+///TEST!!!!!!!!
+
+//used to find the last object mentioned, used to deal with pronouns
+	public String findAmbiguousItem()
+	{
+		String command = prevcommands.get(prevcommands.size()-1);
+		String[] cmd = command.split("[ ]");
+System.out.println("   Currently finding ambiguous item " );
+
+		//color and shape
+		String c = "";
+		String sh = "";
+
+		for (int i = 0; i < cmd.length; i++)
+		{
+			if (colors.contains(cmd[i]))
+				c = "" + cmd[i];
+			if (shapes.contains(cmd[i]))
+				sh = "" + cmd[i];
+		}
+		String str = "" + c + " " + sh;
+		return str;
+	}
+
+
 	
 	public ArrayList<Coord> findItem(String color, String shape){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
