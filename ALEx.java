@@ -173,8 +173,10 @@ public class ALEx{
 					rtn = rtn + "move " + dest.getL() + " " + dest.getR();
 					prevcommands.add("move " + dest.getL() + " " + dest.getR());
 				}else if (verb.equals("move") && !dir.equals("")){
-					for(int i = 0; i < num_moves; i++) {
-						rtn = rtn + "move " + dir;
+					rtn = rtn + "move " + dir;
+					prevcommands.add("move " + dir);
+					for(int i = 1; i < num_moves; i++) {
+						rtn = rtn + "|move " + dir;
 						prevcommands.add("move " + dir);
 					}
 				}
