@@ -235,11 +235,12 @@ public class ALExGUI {
 			
 			
 			if (stepcounter == 0 && todo.size() != 0){
-				
-				
 				String current = todo.get(0);
 				if (current.startsWith("!")){
 					record.append(current.substring(1) + "\n");
+				}else if(current.equals("unknown")) {
+					record.append("I don't understand.\n"); 
+					todo.remove(0); 
 				}else if (current.contains("moveto")){
 					//the command for moving to an item
 
@@ -385,7 +386,6 @@ public class ALExGUI {
 						record.append("I don't have one of those to put down.\n");
 					}
 					todo.remove(0);
-					
 				}else if (current.equals("immediatepickup")){
 					//immediatepickup is a command the GUI appends to its own todo list to tell it to pick up whatever object is at its location
 					if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
@@ -407,8 +407,6 @@ public class ALExGUI {
 					}
 					todo.remove(0);
 				}
-				
-	
 			}
 
 			stepcounter++;
