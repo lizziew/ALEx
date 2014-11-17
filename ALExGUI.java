@@ -37,7 +37,7 @@ public class ALExGUI {
 	JTextArea record; 					//Shows stuff that has been input and output
 	JTextField input;					//Where you type
 	JPanel bottomhalf;					//Contains components other than the graphicspanel
-	int ALExx = 0;						//Alex's starting x and y coords
+	int ALExx = 0;						//Alex's starting x and y coords					
 	int ALExy = 0;
 	
 	ArrayList<String> todo;				//current pending commands
@@ -51,11 +51,18 @@ public class ALExGUI {
 	int objectdensity = 25; 					//out of 100
 	int stepcounter = 0; 				//Alex only moves every eighth time the board is redrawn
 	
+	JButton help;						//the button pressed to summon the help window
+	
 	public static void main(String[] args) {		//Main method calls constructor, where most of the stuff happens
 		ALExGUI letsgo = new ALExGUI();
 	}
 
 	public ALExGUI() {
+		
+		//set up the window that asks the user for board size
+		JFrame getDim = new JFrame("Set board side length");
+		getDim.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getDim.setLayout(new BorderLayout());
 		
 		dimensions = 15;
 		
@@ -170,6 +177,10 @@ public class ALExGUI {
 		go = new JButton("GO");
 		go.addMouseListener(new MouseHandler());
 		inputandgo.add(go, BorderLayout.LINE_END);
+		
+		help = new JButton("HELP?");
+		help.addMouseListener(new MouseHandler());
+		inputandgo.add(help, BorderLayout.LINE_START);
 		
 		t= new Timer(25,new TimerHandler());
 		t.start(); 
@@ -584,8 +595,8 @@ public class ALExGUI {
 			g.drawImage(graph, 100, 0, null);
 		}
 	}	
-
-	private class KeyHandler implements KeyListener{
+	
+	private class KeyHandler implements KeyListener{ 	//key handler for the main window
 
 		@Override
 		public void keyPressed(KeyEvent arg0) {
@@ -610,7 +621,7 @@ public class ALExGUI {
 		
 	}
 	
-	private class MouseHandler implements MouseListener{	//registers when someone clicks the go button
+	private class MouseHandler implements MouseListener{	//registers when someone clicks the main window's go button
 		
 		public void mouseClicked(MouseEvent e){
 			if (e.getSource().equals(go)){
@@ -618,6 +629,30 @@ public class ALExGUI {
 				record.append(inputtext + "\n");
 				processInput(alex.parseText(inputtext));
 				input.setText("");
+			}
+			if (e.getSource().equals(help)){
+				JFrame help = new JFrame("Tips");
+				help.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				JTextArea helptips = new JTextArea("ALEx (the pink being with eyes, antlers, and a backpack) is in a grid world \n" +
+						"filled with objects of various shapes and colors. You can command ALEx to \n" +
+						"manipulate the world. \n \n" +
+						"List of colors: red, orange, yellow, green, blue, light blue, purple, pink, brown, \ngray, black \n\n" +
+						"List of shapes: circle, moon or crescent, square, star, triangle \n\n" + 
+						"Possible commands you can try: \n"
+						+ "- \"Pick up the blue square\" \n"
+						+ "- \"Find the green moon\" \n"
+						+ "- \"Move to 0 0 then move right\" \n"
+						+ "- \"Walk to 10 10 and drop item\" \n"
+						+ "- \"Move 10 squares south\" \n"
+						+ "- \"Do not pick up anything\" \n\n" 
+						+ "Things ALEx does not understand yet: \n"
+						+ "- \"Go the nearest pink circle\"\n"
+						+ "- \"Pick up all the stars\"\n"
+						+ "- \"Pick up any blue thing\"\n");
+				helptips.setEditable(false);
+				help.add(helptips);
+				help.setSize(500,400);
+				help.setVisible(true);
 			}
 		}
 

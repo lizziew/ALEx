@@ -59,10 +59,10 @@ Done:
 * store information between commands and answer back (pick up blue star...which blue star...the one at 3 3) Keep a list of previous commands, split by clause. 
 * cmds like "move 2 squares to the east" etc 
 * saying "i don't understand" to confusing commands rather than ignoring
+* hardcode number words from one to nineteen
 
 Todo (some optional due to time constraints): 
 
-* hardcode number words from one to nineteen
 * ”nearest” and so on as descriptors for objects
 * dealing with only having descriptors (“nearest blue thing”) rather than nice color + shape combo
 * move object from [wherever] to [wherever]
