@@ -288,8 +288,8 @@ public class ALEx{
 							rtn = rtn + "pick up loc " + dest.getL() + " " + dest.getR();
 							prevcommands.add("pick up loc " + dest.getL() + " " + dest.getR());
 						}else{
-							rtn = rtn + "immediatepickup";
-							prevcommands.add("immediatepickup");
+							rtn = rtn + "tryimmediatepickup";
+							prevcommands.add("tryimmediatepickup");
 						}
 					}
 				}

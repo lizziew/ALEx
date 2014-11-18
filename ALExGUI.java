@@ -265,9 +265,28 @@ public class ALExGUI {
 					if (coordlist.size() == 1){
 						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 					}else if (coordlist.size() == 0){
-						record.append("There aren't any " + color + " " + shape + "s.");
+						if (color.equals("blue")){
+							coordlist = alex.findItem("lightblue", shape);
+							if (coordlist.size() == 1){
+								todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
+							}else if (coordlist.size() == 0){
+								record.append("There aren't any blue " + shape + "s.\n");
+							}else if (coordlist.size() > 1){
+								record.append("Which blue " + shape + " do you mean?\n");
+							}
+						}else{
+							if (color.equals("lightblue")){
+								record.append("There aren't any light blue " + shape + "s.\n");
+							}else{
+								record.append("There aren't any " + color + " " + shape + "s.\n");
+							}
+						}
 					}else if (coordlist.size() > 1){
-						record.append("I don't know which " + color + " " + shape + " you mean.");
+						if (color.equals("lightblue")){
+							record.append("Which light blue " + shape + " do you mean?\n");
+						}else{
+							record.append("Which " + color + " " + shape + " do you mean?\n");
+						}
 					}
 					
 				}else if (current.contains("move")){
@@ -403,9 +422,27 @@ public class ALExGUI {
 						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 						todo.add(1, "immediatepickup");
 					}else if (coordlist.size() == 0){
-						record.append("There aren't any " + color + " " + shape + "s.\n");
+						if (color.equals("blue")){ 			//check if they meant light blue
+							coordlist = alex.findItem("lightblue", shape);
+							if (coordlist.size() == 1){
+								todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
+								todo.add(1, "immediatepickup");
+							}else if (coordlist.size() == 0){
+								record.append("There aren't any blue " + shape + "s.\n");
+							}else if (coordlist.size() > 1){
+								record.append("Which blue " + shape + " do you mean?\n");
+							}
+						}else if (color.equals("lightblue")){
+							record.append("There aren't any light blue " + shape + "s.\n");
+						}else{
+							record.append("There aren't any " + color + " " + shape + "s.\n");
+						}
 					}else if (coordlist.size() > 1){
-						record.append("I don't know which " + color + " " + shape + " you mean.\n");
+						if (color.equals("lightblue")){
+							record.append("Which light blue " + shape + " do you mean?\n");
+						}else{
+							record.append("Which " + color + " " + shape + " do you mean?\n");
+						}
 					}
 					}
 					
@@ -430,7 +467,17 @@ public class ALExGUI {
 				}else if (current.equals("immediatepickup")){
 					//immediatepickup is a command the GUI appends to its own todo list to tell it to pick up whatever object is at its location
 					if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
-						record.append("There's nothing here to pick up!\n");
+						record.append("There's nothing here to pick up.\n");
+					}else{
+						alex.pickUp();
+					}
+					todo.remove(0);
+				}else if(current.equals("tryimmediatepickup")){
+					//alex is confused but tries picking up what is wherever he is standing just in case
+					//functionally the same as immediatepickup but needs a different error message
+					//because someone might have tried another command
+					if (alex.getEnviron().getStuff()[ALExx][ALExy] == null){
+						record.append("I don't understand.\n");
 					}else{
 						alex.pickUp();
 					}
@@ -441,7 +488,7 @@ public class ALExGUI {
 						if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
 							record.append("There's already something here.\n");
 						}else{
-							alex.putDown(alex.getBackpack().get(0));
+							alex.putDown(alex.getBackpack().get(alex.getBackpack().size()-1));
 						}
 					}else{
 						record.append("I don't have anything to put down...\n");
