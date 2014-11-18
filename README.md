@@ -9,7 +9,6 @@ Aspects of Project:
 * GUI: Representation of 2-D world containing ALEx the agent & objects with various qualities such as those listed below:
   * color
   * shape
-  * (heaviness/edibility - to add if we have time, they prevent certain actions)
 * Text input from users
 * Language processing to understand commands - specifically sentence parsing and extracting meaning from commands like:
   * Move the blue triangle
@@ -22,8 +21,6 @@ Aspects of Project:
 * How to respond:
   * I have no idea what you just said...
   * Which “blue thing?”
-  * (Gross! It’s not edible.)
-  * (It’s too heavy.)
   
 Timeline for project:
 Goals, ranked from theoretically easiest to theoretically hardest.
@@ -33,7 +30,6 @@ Goals, ranked from theoretically easiest to theoretically hardest.
 	•	Understanding and answering questions 
 	•	Understanding commands 
 	•	Figuring out what information to request to clarify commands 
-	•	If we have time, additional properties of objects and how to interact with them (edibility/heaviness/etc)
 
 Things to consider when understanding commands:
 
@@ -60,15 +56,18 @@ Done:
 * cmds like "move 2 squares to the east" etc 
 * saying "i don't understand" to confusing commands rather than ignoring
 * hardcode number words from one to nineteen
+* light blue vs blue ambiguity
+* the 'all' descriptor
 
 Todo (some optional due to time constraints): 
 
-* ”nearest” and so on as descriptors for objects
-* dealing with only having descriptors (“nearest blue thing”) rather than nice color + shape combo
-* move object from [wherever] to [wherever]
-* the 'all' descriptor
+* merge ruby + grace versions of ALEx
+* take grace's hopefully-mostly-fixed putdown method and have ruby add only-color/only-shape contingencies (pretty easy)
+* then we will have "all/each/every" AND a way to deal with only-color and only-shape
+* although ruby still has to modify alexgui to deal with those. but alex will be good 
+
+* move object to [wherever]
 * descriptors like 'nearest,' 'leftmost,' 'above you'...
 * answering questions like 'where is [whatever]'
-* light blue vs. blue ambiguity
-
+* ambiguity: move to the blue thing  
 
