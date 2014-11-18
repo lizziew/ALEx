@@ -58,16 +58,12 @@ Done:
 * hardcode number words from one to nineteen
 * light blue vs blue ambiguity
 * the 'all' descriptor
+* ambiguity: move to the blue thing  
 
 Todo (some optional due to time constraints): 
 
-* merge ruby + grace versions of ALEx
-* take grace's hopefully-mostly-fixed putdown method and have ruby add only-color/only-shape contingencies (pretty easy)
-* then we will have "all/each/every" AND a way to deal with only-color and only-shape
-* although ruby still has to modify alexgui to deal with those. but alex will be good 
-
 * move object to [wherever]
-* descriptors like 'nearest,' 'leftmost,' 'above you'...
+* descriptors like 'nearest,' 'leftmost,' 'above you'... *grace is working on a limited set of these
 * answering questions like 'where is [whatever]'
-* ambiguity: move to the blue thing  
+
 
