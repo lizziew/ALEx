@@ -61,6 +61,11 @@ Done:
 
 Todo (some optional due to time constraints): 
 
+* merge ruby + grace versions of ALEx
+* take grace's hopefully-mostly-fixed putdown method and have ruby add only-color/only-shape contingencies (pretty easy)
+* then we will have "all/each/every" AND a way to deal with only-color and only-shape
+* although ruby still has to modify alexgui to deal with those. but alex will be good 
+
 * move object to [wherever]
 * descriptors like 'nearest,' 'leftmost,' 'above you'...
 * answering questions like 'where is [whatever]'
