@@ -270,19 +270,16 @@ public class ALEx{
 						}
 						all = false;
 						return rtn;
-					}
-					if (dest == null && !color.equals("") && !shape.equals("")){
-						rtn = rtn + "pick up " + color + " " + shape;
-						prevcommands.add("pick up " + color + " " + shape);
 					}else if(dest != null){
 						rtn = rtn + "pick up loc " + dest.getL() + " " + dest.getR();				//"pick up loc" is for pickup at coordinates
 						prevcommands.add("pick up loc " + dest.getL() + " " + dest.getR());
-					}else if(!color.equals("")||!shape.equals("")){
+					}else if(!(color.equals("")||shape.equals(""))){
 						
 						rtn = rtn + "pick up " + color + " " + shape;
 						
 					}else if(!color.equals("")){
 						
+						System.out.println("it should be here");
 						rtn = rtn + "pick upc " + color;
 						prevcommands.add("pick upc " + color);
 
@@ -361,6 +358,12 @@ public class ALEx{
 					else if (!(color.equals("") || shape.equals(""))){
 						rtn = rtn + "put down " + color + " " + shape;
 						prevcommands.add("put down " + color + " " + shape);
+					}else if(!color.equals("")){
+						rtn = rtn + "put downc " + color;
+						prevcommands.add("put downc " + color);
+					}else if(!shape.equals("")){
+						rtn = rtn + "put downs " + shape;
+						prevcommands.add("put downs " + shape);
 					}else{
 						int n = 1;
 						//iterate through previous commands to find an appropriate object
@@ -658,7 +661,7 @@ System.out.println("  Found " + shape + ": " + rtn);
 		
 	}
 	
-	private ArrayList<Coord> findColorItem(String c){
+	public ArrayList<Coord> findColorItem(String c){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 		for (int i=0; i<dimension; i++){
 			for (int j=0; j<dimension; j++){
@@ -670,7 +673,7 @@ System.out.println("  Found " + shape + ": " + rtn);
 		return rtn;
 	}
 	
-	private ArrayList<Coord> findShapeItem(String s){
+	public ArrayList<Coord> findShapeItem(String s){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 		for (int i=0; i<dimension; i++){
 			for (int j=0; j<dimension; j++){
@@ -868,6 +871,30 @@ System.out.println("Added " + i + " " + j);
 		}
 
 		return false; 
+	}
+	
+	public Item hasColor(String c){ 	//returns the item of that color alex is carrying if he has one, or else a blank item
+		Item rtn = new Item(-1,-1,"","");
+		
+		for (int i = 0; i<getBackpack().size(); i++){
+			if (getBackpack().get(i).getColor().equals(c)){
+				rtn = getBackpack().get(i);
+			}
+		}
+		
+		return rtn;
+	}
+	
+	public Item hasShape(String s){		//returns the item of that shape alex is carrying if he has one, or else a blank item
+		Item rtn = new Item(-1,-1,"","");
+		
+		for (int i = 0; i<getBackpack().size(); i++){
+			if (getBackpack().get(i).getShape().equals(s)){
+				rtn = getBackpack().get(i);
+			}
+		}
+		
+		return rtn;
 	}
 
 	public boolean lookForItem(Item item) { //look for an item in environment 
