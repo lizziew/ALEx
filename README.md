@@ -57,11 +57,11 @@ Done:
 * saying "i don't understand" to confusing commands rather than ignoring
 * hardcode number words from one to nineteen
 * light blue vs blue ambiguity
+* the 'all' descriptor
 
 Todo (some optional due to time constraints): 
 
 * move object to [wherever]
-* the 'all' descriptor
 * descriptors like 'nearest,' 'leftmost,' 'above you'...
 * answering questions like 'where is [whatever]'
 * ambiguity: move to the blue thing  
