@@ -343,9 +343,11 @@ public class ALEx{
 							rtn = rtn + "move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape; 
 							prevcommands.add("move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape);
 						}else if(!color.equals("")){
-							
+							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|put downc " + color;
+							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|put downc " + color);
 						}else if(!shape.equals("")){
-							
+							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|put downs " + shape;
+							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|put downs " + shape);
 						}
 						else
 						{
