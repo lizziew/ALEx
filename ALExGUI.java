@@ -248,6 +248,7 @@ public class ALExGUI {
 				String current = todo.get(0);
 				if (current.startsWith("!")){
 					record.append(current.substring(1) + "\n");
+					todo.remove(0);
 				}else if(current.equals("unknown")) {
 					record.append("I don't understand.\n"); 
 					todo.remove(0); 
@@ -405,7 +406,7 @@ public class ALExGUI {
 					}else if (coordlist.size() == 0){
 						record.append("There aren't any " + color + " " + shape + "s.\n");
 					}else if (coordlist.size() > 1){
-						record.append("I don't know which " + color + " " + shape + " you mean.\n");
+						record.append("I don't know which " + color + " " + shape + " you are referring to.\n");
 					}
 					}
 					
@@ -424,7 +425,7 @@ public class ALExGUI {
 							alex.putDown(new Item(-1,-1,color,shape));
 						}		
 					}else{
-						record.append("I don't have one of those to put down.\n");
+						record.append("I don't have a " + color + " " + shape + " to put down.\n");
 					}
 					todo.remove(0);
 				}else if (current.equals("immediatepickup")){

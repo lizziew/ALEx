@@ -23,6 +23,7 @@ public class ALEx{
 	private String def_colors[] = {"red", "orange", "yellow", "green", "blue", "lightblue", "purple", "pink", "brown", "gray", "black"}; 
 	private String def_shapes[] = {"circle", "moon", "crescent", "square", "star", "triangle"};
 
+
 	private ArrayList<String> prevcommands;
 	
 	private boolean needClarification;
@@ -124,7 +125,6 @@ public class ALEx{
 		
 		//convert string to lower case and get rid of punctuation; split around periods, "and", "then"
 //Perhaps also split at ? or ! ....
-////I'll try to do it below -Grace
 
 		s=s.toLowerCase();
 
@@ -165,8 +165,18 @@ public class ALEx{
 				int num_moves = 1; 
 			
 				for (int i = 0; i<processedwords.size(); i++){
+					if (processedwords.get(i).equals("grey"))
+					{
+						processedwords.remove(i);
+						processedwords.add(i, "gray");
+						color = processedwords.get(i);
+					}
 					if (colors.contains(processedwords.get(i))){
 						color = processedwords.get(i);
+					}
+					if (isPlural(processedwords.get(i)))
+					{
+						shape = makeSingular(processedwords.get(i));
 					}	
 					if (shapes.contains(processedwords.get(i))){
 						shape = processedwords.get(i);
@@ -176,7 +186,7 @@ public class ALEx{
 						num_moves = num_words.indexOf(processedwords.get(i)); 
 						System.out.println("stuff " + num_words.indexOf(processedwords.get(i)));
 					}
-					if (processedwords.get(i).equals("all")){
+					if (processedwords.get(i).equals("all") || processedwords.get(i).equals("every") || processedwords.get(i).equals("each")){
 						all = true;
 					}
 					if (processedwords.get(i).contains("coord")){
@@ -254,6 +264,19 @@ public class ALEx{
 				//if verb is pick up, send back thing we're picking up, or coords
 				if (verb.equals("pick up"))
 				{
+					if (all)
+					{
+////////////////////////////////////////////////////geass
+						ArrayList<Coord> toGet = findItem(color, shape);
+						for (int i = 0; i < toGet.size(); i++)
+						{
+							rtn = rtn + "pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR();
+							if (i != toGet.size()-1)
+								rtn = rtn + "|";
+						}
+						all = false;
+						return rtn;
+					}
 					if (dest == null && !color.equals("") && !shape.equals("")){
 						rtn = rtn + "pick up " + color + " " + shape;
 						prevcommands.add("pick up " + color + " " + shape);
@@ -300,14 +323,13 @@ public class ALEx{
 				//if the verb is put down, send back put down + the color and shape
 				if (verb.equals("put down"))
 				{
-					if (dest != null)
+					if (all)
 					{
-
-System.out.println("Color: " + color);
-System.out.println("Shape: " + shape);
-System.out.println("Destination: " + dest.getL() + " " + dest.getR());
-
-
+						rtn = rtn + "!I can't do that...";
+						prevcommands.add("!I can't do that...");
+					}
+					else if (dest != null)
+					{
 						if(!(color.equals("") || shape.equals("")))
 						{
 							rtn = rtn + "move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape; 
@@ -318,10 +340,11 @@ System.out.println("Destination: " + dest.getL() + " " + dest.getR());
 							int n = 1;
 //kittyhawk
 							//put down the last thing in the backpack
-
 							String stuff = items.get(items.size()-1).toString();
-							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|put down " + stuff;
-							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|put down " + stuff);
+System.out.println("Size of backpack is : " + items.size());
+System.out.println("Last thing put in backpack is..." + stuff);
+							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|immediateputdown"; // "|put down " + stuff;
+							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|immediateputdown");// "|put down " + stuff);
 /*							
 							if (!(color.equals("") || shape.equals(""))){
 								if (shape.equals("crescent")){shape = "moon";}
@@ -448,7 +471,29 @@ System.out.println("   Currently finding ambiguous item " );
 		return str;
 	}
 
-
+//stupid plurals...
+	public boolean isPlural(String s)
+	{
+		for (int i = 0; i < def_shapes.length; i++)
+		{
+			if (s.contains(def_shapes[i]))
+				return true;
+		}
+		return false;
+	}
+	public String makeSingular(String s)
+	{
+		String str;
+		for (int i = 0; i < def_shapes.length; i++)
+		{
+			if (s.contains(def_shapes[i]))
+			{
+				str = "" + def_shapes[i];
+				return str;
+			}
+		}
+		return null;
+	}
 	
 	public ArrayList<Coord> findItem(String color, String shape){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
@@ -456,7 +501,9 @@ System.out.println("   Currently finding ambiguous item " );
 		if(color == "" && shape == "")
 			return rtn; 
 		if(color == "") {
-			rtn = findShapeItem(shape); 
+System.out.println("Color is blank. Searching for all " + shape + "s ...");
+			rtn = findShapeItem(shape);
+System.out.println("  Found " + shape + ": " + rtn);
 			return rtn; 
 		}
 		if(shape == "") {
@@ -482,7 +529,7 @@ System.out.println("   Currently finding ambiguous item " );
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 		for (int i=0; i<dimension; i++){
 			for (int j=0; j<dimension; j++){
-				if (world.getStuff()[i][j].getColor().equals(c)){
+				if (world.getStuff()[i][j] != null && world.getStuff()[i][j].getColor().equals(c)){
 					rtn.add(new Coord(i,j));
 				}
 			}
@@ -494,8 +541,9 @@ System.out.println("   Currently finding ambiguous item " );
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 		for (int i=0; i<dimension; i++){
 			for (int j=0; j<dimension; j++){
-				if (world.getStuff()[i][j].getColor().equals(s)){
+				if (world.getStuff()[i][j] != null && world.getStuff()[i][j].getShape().equals(s)){
 					rtn.add(new Coord(i,j));
+System.out.println("Added " + i + " " + j);
 				}
 			}
 		}
