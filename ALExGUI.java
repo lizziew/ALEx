@@ -36,7 +36,7 @@ public class ALExGUI {
 	GraphicsPanel grid;					//The painted component
 	JTextArea record; 					//Shows stuff that has been input and output
 	JTextField input;					//Where you type
-	JPanel bottomhalf;					//Contains components other than the graphicspanel
+	JPanel bottomhalf;					//Contains text input, record, and help and go buttons
 	int ALExx = 0;						//Alex's starting x and y coords					
 	int ALExy = 0;
 	
@@ -48,8 +48,8 @@ public class ALExGUI {
 	JButton go;							//Press to enter text
 	BufferedImage [][] itemsprites = new BufferedImage[5][11];	//an array of pictures of different-colored shapes
 	int dimensions; 					//The size of the (square) board
-	int objectdensity = 25; 					//out of 100
-	int stepcounter = 0; 				//Alex only moves every eighth time the board is redrawn
+	int objectdensity = 15; 			//out of 100 - how thickly the board is populated with random objects
+	int stepcounter = 0; 				//Alex only moves every eighth time the board is redrawn, so this one increments each time and resets when it gets to eight
 	
 	JButton help;						//the button pressed to summon the help window
 	
@@ -59,16 +59,17 @@ public class ALExGUI {
 
 	public ALExGUI() {
 		
-		//set up the window that asks the user for board size
-		JFrame getDim = new JFrame("Set board side length");
-		getDim.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getDim.setLayout(new BorderLayout());
+		dimensions = 15;				
+		//size of the board is changeable, but only by modifying this constant in the code
 		
-		dimensions = 15;
+		columnwidth = Math.round((float)500/(float)dimensions);
+		//set the width of each row/column based on that
 		
 		alex = new ALEx(dimensions);
+		//initializing alex
 		
 		todo = new ArrayList<String>();
+		//initializing the queue of commands
 		
 		try {														//Reading in the multitudinous sprites
 			
@@ -138,13 +139,14 @@ public class ALExGUI {
 			System.out.println(e);
 		}
 		
-		JFrame frame = new JFrame("ALEx - Artificial Linguistic Executor");					//Making and placing all the components
+		
+		
+		//Making and placing all the components
+		JFrame frame = new JFrame("ALEx - Artificial Linguistic Executor");					
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
 		
 		bottomhalf = new JPanel();
-		
-		columnwidth = Math.round((float)500/(float)dimensions);
 		
 		grid = new GraphicsPanel();
 		grid.setPreferredSize(new Dimension(600,500));
@@ -172,18 +174,23 @@ public class ALExGUI {
 		
 		input = new JTextField("Input");
 		input.addKeyListener(new KeyHandler());
+		//this keyhandler deals with enter being pressed to send input
 		inputandgo.add(input, BorderLayout.CENTER);
 		
 		go = new JButton("GO");
 		go.addMouseListener(new MouseHandler());
+		//a mousehandler to track when the button is pressed
 		inputandgo.add(go, BorderLayout.LINE_END);
 		
 		help = new JButton("HELP?");
 		help.addMouseListener(new MouseHandler());
+		//a mousehandler to track when the button is pressed
 		inputandgo.add(help, BorderLayout.LINE_START);
 		
 		t= new Timer(25,new TimerHandler());
 		t.start(); 
+		//every time this timer goes off, it redraws the gridworld, alex, backpack etc. 
+		//as well as increasing stepcounter
 		
 		//put some objects in the frame
 		int objnumber = Math.round((float)((dimensions * dimensions)*objectdensity)/(float)(100));
@@ -208,7 +215,10 @@ public class ALExGUI {
 		
 	}
 	
-	private void processInput(String inputtext){		//Processes and acts on a string of text inputted
+	private void processInput(String inputtext){		
+		//Splits a string of text returned from ALEx's language processing and sends it to todo
+		//(called by the key and mousehandlers for input, which send their text to alex and then
+		//give alex's output to this method) 
 		
 		//first, split string by | delimiter
 		String[] inputsplit = inputtext.split("\\|");
@@ -225,11 +235,12 @@ public class ALExGUI {
 	private class GraphicsPanel extends JPanel{
 		BufferedImage graph; 		//the grid
 		BufferedImage backpack; 	//the backpack
-		Graphics graphdraw;
+		Graphics graphdraw;			//Graphics for each of those, to draw lines etc. 
 		Graphics backpackdraw;
 		
 		public GraphicsPanel() {
-			graph = new BufferedImage(502, 502, BufferedImage.TYPE_INT_ARGB); //The extra two pixels are necessary because the division is inexact integer division
+			graph = new BufferedImage(502, 502, BufferedImage.TYPE_INT_ARGB); 
+			//The extra two pixels are necessary because the division is inexact integer division
 			backpack = new BufferedImage(100,502, BufferedImage.TYPE_INT_ARGB);
 			graphdraw = graph.createGraphics(); 
 			backpackdraw = backpack.createGraphics();
@@ -242,26 +253,43 @@ public class ALExGUI {
 		
 		public void paintComponent(Graphics g) {
 			
-			// 1/8 milliseconds, progress alex's current objective
+			// if stepcounter = 0 (i.e. it is the one-out-of-eight steps on which
+			// alex moves)) then it processes the to-do list
 			
 			if (stepcounter == 0 && todo.size() != 0){
+				
 				String current = todo.get(0);
+				
 				if (current.startsWith("!")){
+					//if it starts with !, it is a message that ALEx wants directly appended to the output
+					//without acting on it
 					record.append(current.substring(1) + "\n");
 					todo.remove(0);
 				}else if(current.equals("unknown")) {
+					//if it is unknown, alex.. did not understand it, so we print accordingly
 					record.append("~I don't understand.\n"); 
 					todo.remove(0); 
-				}else if (current.contains("movetoc")){			//move command with just a color
-
+				}else if (current.contains("movetoc")){			
+					//the command sent for "move to a red object" or similar - only a color
+					
+					//first we extract the color from the command
 					String color = current.substring(current.indexOf(" ") + 1);
+					
+					//see how many items of that color there are, and where
 					ArrayList<Coord> coordlist = alex.findColorItem(color);
 					
+					//remove it from the queue since it is being acted on
 					todo.remove(0);
 					
 					if (coordlist.size() == 1){
+						//if there is one item, we insert moving to that item's coords at the front of the queue
 						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 					}else if(coordlist.size() == 0){
+						//if there are none, we first check if the user wrote blue and meant to refer to light blue objects
+						//and if not, print that there aren't any of the appropriate color
+						
+						// **the various lightblue -> light blue substitutions are just because internally,
+						//alex refers to the color as "lightblue," but we want to print "light blue" 
 						if (color.equals("blue")){
 							coordlist = alex.findColorItem("lightblue");
 							if (coordlist.size() == 1){
@@ -272,14 +300,15 @@ public class ALExGUI {
 								record.append("~Which blue thing do you mean?\n");
 							}
 						}else{
-							if (color.equals("light blue")){
+							if (color.equals("lightblue")){
 								record.append("~There aren't any light blue things.\n");
 							}else{
 								record.append("~There aren't any " + color + " things.\n");
 							}
 						}
 					}else if(coordlist.size() > 1){
-						if (color.equals("light blue")){
+						//if there's more than one, we ask for clarification
+						if (color.equals("lightblue")){
 							record.append("~Which light blue thing do you mean?\n");
 						}else{
 							record.append("~Which " + color + " thing do you mean?\n");
@@ -288,34 +317,47 @@ public class ALExGUI {
 
 										
 				}else if (current.contains("movetos")){
+					
+					//we have a shape to move to, but nothing else - e.g. 'move to the square' will be 'movetos square'
+					
+					//first extract the shape
 					String shape = current.substring(current.indexOf(" ") + 1);
 					
+					//remove it from queue
 					todo.remove(0);
 					
+					//find the items of that shape
 					ArrayList<Coord> coordlist = alex.findShapeItem(shape);
 					
 					if (coordlist.size() == 1){
+						//if there is one, move to it
 						todo.add(0, "move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 					}else if(coordlist.size() == 0){
+						//if there are zero, say so
 						record.append("~There are no " + shape + " s.\n");
 					}else if(coordlist.size() > 1){
+						//if there is more than one, ask for clarification
 						record.append("~Which " + shape + " did you mean?\n");
 					}
 					
 				}else if (current.contains("moveto")){
-					//the command for moving to an item
+					//the command for moving to an item with both color and shape provided
 
 					//parse the color and shape out of the command
 					String currentcopy = current.substring(current.indexOf(" ") + 1);
 					String color = currentcopy.substring(0, currentcopy.indexOf(" "));
 					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
 					
+					//remove from queue
 					todo.remove(0);
 					
 					ArrayList<Coord> coordlist = alex.findItem(color, shape);
 					if (coordlist.size() == 1){
+						//if there is one, move to it
 						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 					}else if (coordlist.size() == 0){
+						//if there are none, check if they meant light blue and said blue
+						//**as before, lightblue -> light blue so it prints in a correctly-spelled way
 						if (color.equals("blue")){
 							coordlist = alex.findItem("lightblue", shape);
 							if (coordlist.size() == 1){
@@ -326,6 +368,7 @@ public class ALExGUI {
 								record.append("~Which blue " + shape + " do you mean? (Currently, coordinates are the only way to clarify this.)\n");
 							}
 						}else{
+							//otherwise print that there are none
 							if (color.equals("lightblue")){
 								record.append("~There aren't any light blue " + shape + "s.\n");
 							}else{
@@ -333,6 +376,7 @@ public class ALExGUI {
 							}
 						}
 					}else if (coordlist.size() > 1){
+						//otherwise ask for clarification
 						if (color.equals("lightblue")){
 							record.append("~Which light blue " + shape + " do you mean? (Currently, coordinates are the only way to clarify this.)\n");
 						}else{
@@ -342,7 +386,10 @@ public class ALExGUI {
 					
 				}else if (current.contains("move")){
 					
-					//is it move [direction] (n,e,s,w) or move [coords]?
+					//either 'move x y' or 'move [nesw]'
+					
+					//is it direction or coordinates? 
+					
 					if (current.contains(" n") || current.contains(" e") || current.contains(" s") || current.contains(" w")){
 						
 						//move in the appropriate direction, if you are not at that edge of the board
@@ -484,14 +531,14 @@ public class ALExGUI {
 								record.append("~Which blue thing do you mean?\n");
 							}
 						}else{
-							if (color.equals("light blue")){
+							if (color.equals("lightblue")){
 								record.append("~There aren't any light blue things.\n");
 							}else{
 								record.append("~There aren't any " + color + " things.\n");
 							}
 						}
 					}else if(coordlist.size() > 1){
-						if (color.equals("light blue")){
+						if (color.equals("lightblue")){
 							record.append("~Which light blue thing do you mean?\n");
 						}else{
 							record.append("~Which " + color + " thing do you mean?\n");
@@ -579,7 +626,7 @@ public class ALExGUI {
 						todo.add(0,"put down " + color + " " + i.getShape());
 					}else{
 						if (color.equals("blue")){
-							i = alex.hasColor("light blue");
+							i = alex.hasColor("lightblue");
 							if (i.getX() != -1){
 								todo.add(0,"put down lightblue " + i.getShape());
 							}else{
