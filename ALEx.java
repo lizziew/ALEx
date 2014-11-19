@@ -734,32 +734,45 @@ System.out.println("Added " + i + " " + j);
 		//first split by periods and semicolons
 		String[] sentences = s.split("[\\.;]");
 		
+		ArrayList<String> prertn1 = new ArrayList<String>();
+		ArrayList<String> prertn2 = new ArrayList<String>();
+
 		//then for each one, go through and split around "and"
-		ArrayList<String> prertn = new ArrayList<String>();
 		for (int i = 0; i<sentences.length; i++){
 			//split around and...
 			String[] ands = sentences[i].split("and");
 			
 			//add the first one
-			prertn.add(ands[0]);
+			prertn1.add(ands[0]);
 			//we want the rest to start with 'and' still so the parser knows more easily to look back
 			for (int j = 1; j<ands.length; j++){
-				prertn.add("and" + ands[j]);
+				prertn1.add("and" + ands[j]);
 			}
 		}
 		
 		//then split around "then"
-		for (int i = 0; i<prertn.size(); i++){
+		for (int i = 0; i<prertn1.size(); i++){
 			//split around then...
-			String[] thens = prertn.get(i).split("then");
+			String[] thens = prertn1.get(i).split("then");
 			//add the first one
-			rtn.add(thens[0]);
+			prertn2.add(thens[0]);
 			//we want the rest to start with 'then' still so the parser knows more easily to look back
 			for (int j = 1; j<thens.length; j++){
-				rtn.add("then" + thens[j]);
+				prertn2.add("then" + thens[j]);
 			}
 		}
-		
+				
+		//then split around "but"
+		for (int i = 0; i<prertn2.size(); i++){
+			//split around then...
+			String[] buts = prertn2.get(i).split("but");
+			//add the first one
+			rtn.add(buts[0]);
+			//we want the rest to start with 'then' still so the parser knows more easily to look back
+			for (int j = 1; j<buts.length; j++){
+				rtn.add("but" + buts[j]);
+			}
+		}
 		for (int i = 0; i<rtn.size(); i++){
 			System.out.println("clauses split " + rtn.get(i));
 		}
