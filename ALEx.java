@@ -180,7 +180,7 @@ public class ALEx{
 						processedwords.set(i, Integer.toString(num_words.indexOf(processedwords.get(i)))); 
 						num_moves = num_words.indexOf(processedwords.get(i)); 
 					}
-					if (processedwords.get(i).equals("all") || processedwords.get(i).equals("every") || processedwords.get(i).equals("each")){
+					if (processedwords.get(i).equals("all") || processedwords.get(i).equals("every") || processedwords.get(i).equals("each") || processedwords.get(i).equals("everything")){
 						all = true;
 					}
 					if (processedwords.get(i).contains("coord")){
@@ -263,6 +263,20 @@ public class ALEx{
 							rtn = rtn + "pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR();
 							if (i != toGet.size()-1)
 								rtn = rtn + "|";
+							prevcommands.add("pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR());
+						}
+						if (color.equals("blue"))
+						{
+							color = "light blue";
+							toGet.clear();
+							toGet = findItem(color, shape);
+							for (int i = 0; i < toGet.size(); i++)
+							{
+								rtn = rtn + "pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR();
+								if (i != toGet.size()-1)
+									rtn = rtn + "|";
+								prevcommands.add("pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR());
+							}
 						}
 						all = false;
 						return rtn;
@@ -640,7 +654,19 @@ System.out.println("   Currently finding ambiguous item " );
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 
 		if(color == "" && shape == "")
-			return rtn; 
+		{
+			for (int i = 0; i < dimension; i++)
+			{
+				for (int j = 0; j < dimension; j++)
+				{
+					if (world.getStuff()[i][j] != null)
+					{
+						rtn.add(new Coord(i,j));
+					}
+				}
+			}
+			return rtn;
+		}
 		if(color == "") {
 System.out.println("Color is blank. Searching for all " + shape + "s ...");
 			rtn = findShapeItem(shape);
