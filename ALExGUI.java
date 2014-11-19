@@ -662,6 +662,16 @@ public class ALExGUI {
 			for(int i=0; i<=dimensions;i++){
 				graphdraw.drawLine(0, i*columnwidth, 500, i*columnwidth);
 			}
+			
+			for (int i=0; i<4 && i<dimensions; i++){			//label x coordinates
+				graphdraw.drawString("x= " + i, columnwidth*i + 2, 15);
+			}
+			
+			for (int i=0; i<4 && i<dimensions; i++){			//label y coordinates
+				graphdraw.drawString("y= " + i,5,columnwidth*(i+1)-2);
+			}
+			
+			
 
 			Item[][] stuffs = alex.getEnviron().getStuff();
 			
