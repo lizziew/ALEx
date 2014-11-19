@@ -687,21 +687,29 @@ public class ALExGUI {
 					todo.remove(0);
 				}
 			}
-
+			
+			//ok, todo processing done! that was a trip
+			
+			//increment the step counter, and loop it back to 0 if it's reached 8
 			stepcounter++;
 			if (stepcounter == 8){
 				stepcounter = 0; 
 			}
 
+			//update ALExx and ALExy, our idea of alex's location, to reflect alex's actual location
 			ALExx = alex.getX();
 			ALExy = alex.getY();
 			
 			//draw the grid and fill in objects and alex
 			
+			//first, draw the white background
 			graphdraw.setColor(Color.white);
 			graphdraw.fillRect(0, 0, 500, 500);
 			
+			//then the grid lines
+			
 			graphdraw.setColor(Color.black);
+			
 			for(int i=0; i<=dimensions;i++){
 				graphdraw.drawLine(i*columnwidth, 0, i*columnwidth, 500);
 			}
@@ -710,6 +718,7 @@ public class ALExGUI {
 				graphdraw.drawLine(0, i*columnwidth, 500, i*columnwidth);
 			}
 			
+			//labels the first couple of x and y coordinates. very ugly, sorry. 
 			for (int i=0; i<4 && i<dimensions; i++){			//label x coordinates
 				graphdraw.drawString("x= " + i, columnwidth*i + 2, 15);
 			}
@@ -719,8 +728,10 @@ public class ALExGUI {
 			}
 			
 			
-
+			//gets the array of objects and draws them with the appropriate sprites
+			
 			Item[][] stuffs = alex.getEnviron().getStuff();
+			
 			
 			for (int i = 0; i<dimensions; i++){
 				for (int j = 0; j<dimensions; j++){
@@ -728,7 +739,10 @@ public class ALExGUI {
 					int color=0;
 					int shape=0;
 					
+					//null check necessary because empty spaces on the grid have null in their corresponding array spots
 					if (stuffs[i][j] != null){		
+						
+						//sets the appropriate color and shape
 						
 						if(stuffs[i][j].getColor().equals("red")){
 							color = 0;
@@ -765,6 +779,8 @@ public class ALExGUI {
 						}else if(stuffs[i][j].getShape().equals("triangle")){
 							shape = 4;
 						}
+						
+						//draws the appropriate shape in the appropriate spot
 						
 						graphdraw.drawImage(itemsprites[shape][color], i*columnwidth, j*columnwidth, columnwidth, columnwidth, null);
 					
@@ -844,8 +860,10 @@ public class ALExGUI {
 		}
 	}	
 	
-	private class KeyHandler implements KeyListener{ 	//key handler for the main window
-
+	private class KeyHandler implements KeyListener{ 	
+		//key handler for the main window - used to detect when enter is pressed
+		//the other methods are necessary for the interface but nonfunctional
+		
 		@Override
 		public void keyPressed(KeyEvent arg0) {
 			
@@ -859,6 +877,9 @@ public class ALExGUI {
 
 		@Override
 		public void keyTyped(KeyEvent arg0) {
+			//if enter is typed, it appends the input to the record,
+			//sends that text to alex, gives alex's response to the method that will add it to the todo queue
+			//and clears the input box
 			if (arg0.getKeyChar() == '\n'){
 				String inputtext = input.getText();
 				record.append(inputtext + "\n");
@@ -869,16 +890,22 @@ public class ALExGUI {
 		
 	}
 	
-	private class MouseHandler implements MouseListener{	//registers when someone clicks the main window's go button
+	private class MouseHandler implements MouseListener{	
+		//registers when someone clicks the go or help button
 		
 		public void mouseClicked(MouseEvent e){
 			if (e.getSource().equals(go)){
+				//if it is go, it adds the text in the input box to the record,
+				//sends that text to alex,
+				//calls the method that will add alex's response to the todo queue,
+				//and clears the input box
 				String inputtext = input.getText();
 				record.append(inputtext + "\n");
 				processInput(alex.parseText(inputtext));
 				input.setText("");
 			}
 			if (e.getSource().equals(help)){
+				//if it is help, it just opens the help window with this preset text. ugly because of the newlines ): 
 				JFrame help = new JFrame("Tips");
 				help.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				JTextArea helptips = new JTextArea("ALEx (the pink being with eyes, antlers, and a backpack) is in a grid world \n" +
@@ -927,7 +954,8 @@ public class ALExGUI {
 			}
 		}
 
-		@Override										//the other methods have to be here but don't do anything
+		//the other methods have to be here but don't do anything
+		@Override										
 		public void mouseEntered(MouseEvent arg0) {
 			// TODO Auto-generated method stub
 			
@@ -952,7 +980,7 @@ public class ALExGUI {
 		}
 	}
 	
-	//All the timerhandler does is call piebar's update() method. 
+	//All the timerhandler does is call the graphic's update() method. 
 	private class TimerHandler implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			grid.update();
