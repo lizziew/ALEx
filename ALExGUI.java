@@ -837,22 +837,45 @@ public class ALExGUI {
 				JTextArea helptips = new JTextArea("ALEx (the pink being with eyes, antlers, and a backpack) is in a grid world \n" +
 						"filled with objects of various shapes and colors. You can command ALEx to \n" +
 						"manipulate the world. \n \n" +
-						"List of colors: red, orange, yellow, green, blue, light blue, purple, pink, brown, \ngray, black \n\n" +
+						"The left column in the window displays the contents of ALEx’s backpack\n" +
+						"where ALEx stores the items you tell it to pick up. You can type your\n" +  
+						"commands in the input field at the bottom of the window, and press enter\n" +
+						"or click GO to submit your command.(If you would like to see suggestions for\n" +
+						"possible commands, click HELP.) If ALEx thinks your command is too vague,\n"+ 
+						"it will ask a clarifying question.\n\n" +
+						"List of colors: red, orange, yellow, green, blue, light blue, purple, pink, brown, \ngray, black \n" +
 						"List of shapes: circle, moon or crescent, square, star, triangle \n\n" + 
 						"Possible commands you can try: \n"
-						+ "- \"Pick up the blue square\" \n"
 						+ "- \"Find the green moon\" \n"
 						+ "- \"Move to 0 0 then move right\" \n"
 						+ "- \"Walk to 10 10 and drop item\" \n"
 						+ "- \"Move 10 squares south\" \n"
-						+ "- \"Do not pick up anything\" \n\n" 
+						+ "- \"Move to a blue thing\" \n"
+						+ "- \"Pick up the blue square\" \n"
+						+ "- \"Do not pick up anything\" \n" 
+						+ "- \"Pick up all the moons\" \n" 
+						+ "- \"Pick up every moon\" \n" 
+						+ "- \"Pick up each moon\" \n" 
+						+ "- \"Pick up all the blue things\" \n" 
+						+ "- \"Pick up all the gray stars\" \n" 
+						+ "- \"Drop at 0 0\" \n" 
+						+ "- \"Drop the pink star at 10 10\" \n" 
+						+ "- \"Put down a moon\" \n" 
+						+ "- \"Put down a red object\" \n" 
+						+ "- \"Pick up the red star and drop it at 1 0\" \n"
+						+ "- \"Pick up the red star and circle\" \n\n"  
 						+ "Things ALEx does not understand yet: \n"
 						+ "- \"Go the nearest pink circle\"\n"
-						+ "- \"Pick up all the stars\"\n"
-						+ "- \"Pick up any blue thing\"\n");
+						+ "- \"Get the green triangle on your left\" \n" 
+						+ "- \"Pick up all the round objects\" \n" 
+						+ "- \"Move green square to 0 0\" \n" 
+						+ "- \"Where is the pink circle?\" \n" 
+						+ "- \"Pick up the yellow and brown stars\"\n"
+
+						);
 				helptips.setEditable(false);
 				help.add(helptips);
-				help.setSize(500,400);
+				help.setSize(500,900);
 				help.setVisible(true);
 			}
 		}
