@@ -1,7 +1,7 @@
 
 public class Environment {
 
-	int dimensions = 5; 
+	int dimensions;
 	Item[][] stuff;
 
 	

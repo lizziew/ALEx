@@ -58,11 +58,12 @@ Done:
 * hardcode number words from one to nineteen
 * light blue vs blue ambiguity
 * the 'all' descriptor
+* ambiguity: move to the blue thing  
 
 Todo (some optional due to time constraints): 
 
 * move object to [wherever]
-* descriptors like 'nearest,' 'leftmost,' 'above you'...
+* descriptors like 'nearest,' 'leftmost,' 'above you'... *grace is working on a limited set of these
 * answering questions like 'where is [whatever]'
-* ambiguity: move to the blue thing  
+
 
