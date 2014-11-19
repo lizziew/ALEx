@@ -150,7 +150,6 @@ public class ALEx{
 					verb = "put down";
 
 				System.out.println("Found verb: " + verb);
-
 			
 				boolean all = false; //contains special keyword "all"
 				String color = "";
@@ -180,7 +179,6 @@ public class ALEx{
 					if(num_words.contains(processedwords.get(i))) {
 						processedwords.set(i, Integer.toString(num_words.indexOf(processedwords.get(i)))); 
 						num_moves = num_words.indexOf(processedwords.get(i)); 
-						System.out.println("stuff " + num_words.indexOf(processedwords.get(i)));
 					}
 					if (processedwords.get(i).equals("all") || processedwords.get(i).equals("every") || processedwords.get(i).equals("each")){
 						all = true;
@@ -190,7 +188,6 @@ public class ALEx{
 						inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
 						int destx = Integer.parseInt(inputtext.substring(0,inputtext.indexOf(" ")));
 						int desty = Integer.parseInt(inputtext.substring(inputtext.indexOf(" ") + 1));
-						System.out.println("GOT COORD " + destx + " " + desty);
 						dest = new Coord(destx, desty);
 					}
 					if(pos_words.contains(processedwords.get(i))) {
@@ -208,14 +205,13 @@ public class ALEx{
 						num_moves = Integer.parseInt(processedwords.get(i)); 
 				}
 
-
+				System.out.println("color " + color);
+				System.out.println("shape " + shape);
+				
 				if (hasPickUpVerb(processedwords))
 					verb = "pick up";
 				if (hasPutDownVerb(processedwords))
 					verb = "put down";
-
-			System.out.println("found shape " + shape);
-			System.out.println("found color " + color);
 			
 			if (shape.equals("crescent")){shape="moon";}
 
@@ -276,10 +272,10 @@ public class ALEx{
 					}else if(!(color.equals("")||shape.equals(""))){
 						
 						rtn = rtn + "pick up " + color + " " + shape;
+						prevcommands.add("pick up " + color + " " + shape);
 						
 					}else if(!color.equals("")){
-						
-						System.out.println("it should be here");
+
 						rtn = rtn + "pick upc " + color;
 						prevcommands.add("pick upc " + color);
 
@@ -393,7 +389,6 @@ public class ALEx{
 				
 				
 				
-				
 				if (verb.equals("") && !(color.equals("")||shape.equals(""))){ //a color and shape, but not a verb
 					int n = 1;
 					//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
@@ -481,17 +476,25 @@ public class ALEx{
 					}
 						
 				}else if(verb.equals("") && color.equals("") && !shape.equals("")){	//only a shape
+					System.out.println("only shape");
 					//first find a verb
 					int n = 1;
+				
+					for (int q = 0; q<prevcommands.size(); q++){
+						System.out.println("prevcommands " + q + " " + prevcommands.get(q));
+					}
+					
 					//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
 					while (verb.equals("") && n<=prevcommands.size()){
+						
+						
 						String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
 						
 						for (int i = 0; i<split.length; i++){
 							if (split[i].equals("put")){		//(we're only dealing with the nice processed commands that get sent to gui, so we can assume put -> put down)
 								verb = "put down";
 							}
-							if (split[i].equals("move") || split[i].equals("moveto")){
+							if (split[i].equals("move") || split[i].equals("moveto")|| split[i].equals("movetoc")|| split[i].equals("movetos")){
 								verb = "moveto";				//we know the destination is an item, and putting move instead of moveto saves us the substitution that would otherwise occur later
 							}
 							if (split[i].equals("pick")){ 		//same for pick as put - we know "up" is also there, since this is a string we constructed earlier
@@ -500,6 +503,7 @@ public class ALEx{
 						}
 						n++;
 					}
+					System.out.println("only shape verb found " + verb);
 					//then a color
 					int m = 1;
 					while (color.equals("") && m<=prevcommands.size()){
@@ -511,6 +515,7 @@ public class ALEx{
 						}
 						m++;
 					}
+					System.out.println("only shape color found " + color);
 					
 					if (!(verb.equals("")||color.equals("")||shape.equals(""))){ 	//all three things, yay
 						if (verb.equals("moveto")){
