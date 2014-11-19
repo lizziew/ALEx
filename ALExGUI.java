@@ -387,15 +387,13 @@ public class ALExGUI {
 				}else if (current.contains("move")){
 					
 					//either 'move x y' or 'move [nesw]'
-					
 					//is it direction or coordinates? 
 					
 					if (current.contains(" n") || current.contains(" e") || current.contains(" s") || current.contains(" w")){
 						
-						//move in the appropriate direction, if you are not at that edge of the board
+						//move in the appropriate direction a given number of times, if ALEx is not at that edge of the board
 						int i = 0; 
-						if(current.contains(" n")) {
-							System.out.println("got to the north");
+						if(current.contains(" n")) { //north
 							for(i = 0; i < current.length()-1; i++) 
 								if(current.substring(i, i+2).equals(" n")) {
 									if(ALExy != 0) {
@@ -408,8 +406,7 @@ public class ALExGUI {
 									}
 								}
 						}
-						else if(current.contains(" e")) {
-							System.out.println("got to the east");
+						else if(current.contains(" e")) { //east
 							for(i = 0; i < current.length()-1; i++) 
 								if(current.substring(i, i+2).equals(" e")) {
 									if(ALExx != dimensions-1) {
@@ -422,8 +419,7 @@ public class ALExGUI {
 									}
 								}
 						}
-						else if(current.contains(" s")) {
-							System.out.println("got to the south");
+						else if(current.contains(" s")) { //south
 							for(i = 0; i < current.length()-1; i++) 
 								if(current.substring(i, i+2).equals(" s")) {
 									if(ALExy != dimensions-1) {
@@ -436,8 +432,7 @@ public class ALExGUI {
 									}
 								}
 						}
-						else if(current.contains(" w")) {
-							System.out.println("Got to the west"); 
+						else if(current.contains(" w")) { //west
 							for(i = 0; i < current.length()-1; i++) 
 								if(current.substring(i, i+2).equals(" w")) {
 									if(ALExx != 0) {
@@ -489,37 +484,33 @@ public class ALExGUI {
 						}
 					}
 				
-				}else if (current.contains("pick ups")){
-					
+				}else if (current.contains("pick ups")){ //pick up object with a given shape 
 					String currentcopy = current.substring(current.indexOf(" ") + 1);
 					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
 					
 					todo.remove(0);
 					
-					ArrayList<Coord> coordlist = alex.findShapeItem(shape);
+					ArrayList<Coord> coordlist = alex.findShapeItem(shape); //find all objects of a given shape 
 					
-					if (coordlist.size() == 1){
+					if (coordlist.size() == 1){ //if only one object of a given shape, pick up that object 
 						todo.add(0, "move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 						todo.add(1, "immediatepickup");
-					}else if(coordlist.size() == 0){
+					}else if(coordlist.size() == 0){ //if no objects of a given shape, pick up nothing, and notify user 
 						record.append("~There are no " + shape + "s.\n");
-					}else if(coordlist.size() > 1){
+					}else if(coordlist.size() > 1){ //if there are multiple objects of a given shape, ask for clarification 
 						record.append("~Which " + shape + " did you mean?\n");
 					}
-					
-					
-					
-				}else if (current.contains("pick upc")){
+				}else if (current.contains("pick upc")){ //pick up object with a given color 
 					String currentcopy = current.substring(current.indexOf(" ") + 1);
 					String color = currentcopy.substring(currentcopy.indexOf(" ") + 1);
-					ArrayList<Coord> coordlist = alex.findColorItem(color);
+					ArrayList<Coord> coordlist = alex.findColorItem(color); //find all objects of a given color 
 					
 					todo.remove(0);
 					
-					if (coordlist.size() == 1){
+					if (coordlist.size() == 1){ //if only one object oa given color, pick up that object 
 						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 						todo.add(1, "immediatepickup");
-					}else if(coordlist.size() == 0){
+					}else if(coordlist.size() == 0){ //if no objects of a given color, pick up nothing, and notify user 
 						if (color.equals("blue")){
 							coordlist = alex.findColorItem("lightblue");
 							if (coordlist.size() == 1){
@@ -530,7 +521,7 @@ public class ALExGUI {
 							}else if (coordlist.size() > 1){
 								record.append("~Which blue thing do you mean?\n");
 							}
-						}else{
+						}else{ //all the light blue and blue cases 
 							if (color.equals("lightblue")){
 								record.append("~There aren't any light blue things.\n");
 							}else{
@@ -544,9 +535,8 @@ public class ALExGUI {
 							record.append("~Which " + color + " thing do you mean?\n");
 						}
 					}
-				}else if(current.contains("pick up")){
-					
-					if (current.contains("loc")){ //then you are picking up at a destination
+				}else if(current.contains("pick up")){ //if cmd is pick up something 
+					if (current.contains("loc")){ //pick up object at a given location
 						String currentcopy = current.substring(current.indexOf(" ") + 1);
 						currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
 						currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
@@ -558,23 +548,20 @@ public class ALExGUI {
 						
 						todo.add(0,"move " + pickupx + " " + pickupy);
 						todo.add(1, "immediatepickup");
-					}else{//otherwise an object
-					
+					}else{ //pick up an object 
 					//parse the color and shape out of the command
 					String currentcopy = current.substring(current.indexOf(" ") + 1);
 					currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
 					String color = currentcopy.substring(0, currentcopy.indexOf(" "));
 					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
 					
-					//check if that exists and if more than one/none exist, and if there's a unique one, go to it
-					
 					todo.remove(0);
 					
-					ArrayList<Coord> coordlist = alex.findItem(color, shape);
-					if (coordlist.size() == 1){
+					ArrayList<Coord> coordlist = alex.findItem(color, shape); //find all items with given color and shape 
+					if (coordlist.size() == 1){ //if item is unique, pick it up 
 						todo.add(0,"move " + coordlist.get(0).getL() + " " + coordlist.get(0).getR());
 						todo.add(1, "immediatepickup");
-					}else if (coordlist.size() == 0){
+					}else if (coordlist.size() == 0){ //if there are no items with given info, notify them and ask them for clarification if cmd includes light blue/blue
 						if (color.equals("blue")){ 			//check if they meant light blue
 							coordlist = alex.findItem("lightblue", shape);
 							if (coordlist.size() == 1){
@@ -590,42 +577,39 @@ public class ALExGUI {
 						}else{
 							record.append("~There aren't any " + color + " " + shape + "s.\n");
 						}
-					}else if (coordlist.size() > 1){
+					}else if (coordlist.size() > 1){ //if there are multiple items with given info, ask for clarification and coordinates of object user is referring to
 						if (color.equals("lightblue")){
 							record.append("~Which light blue " + shape + " do you mean? (Currently, coordinates are the only way to clarify this.)\n");
 						}else{
 							record.append("~Which " + color + " " + shape + " do you mean? (Currently, coordinates are the only way to clarify this.)\n");
 						}
 					}
-					}
-					
-					
-				}else if(current.contains("put downs")){
+				}
+				}else if(current.contains("put downs")){ //put down object of a certain shape 
 					
 					String currentcopy = current.substring(current.indexOf(" ") + 1);
 					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
-					Item i = alex.hasShape(shape);
+					Item i = alex.hasShape(shape); //look through backpack for objects of that shape 
 					todo.remove(0);
 					
 					if (i.getX() != -1){
-						todo.add(0,"put down " + i.getColor() + " " + shape);
+						todo.add(0,"put down " + i.getColor() + " " + shape); //if ALEx is carrying object of that shape, put it down 
 					}else{
-						record.append("~I'm not carrying any " + shape + "s.\n");
+						record.append("~I'm not carrying any " + shape + "s.\n"); //ALEx is not carrying an object of that shape 
 					}
 					
 
 					
-				}else if (current.contains("put downc")){
-					
+				}else if (current.contains("put downc")){ //put down object of a certain color 
 					String currentcopy = current.substring(current.indexOf(" ") + 1);
 					String color = currentcopy.substring(currentcopy.indexOf(" ") + 1);
-					Item i = alex.hasColor(color);
+					Item i = alex.hasColor(color); //look through backpack for objects of that color 
 					todo.remove(0);
 					
 					if (i.getX() != -1){
-						todo.add(0,"put down " + color + " " + i.getShape());
+						todo.add(0,"put down " + color + " " + i.getShape()); //if ALEx is carrying object of that color, put it down 
 					}else{
-						if (color.equals("blue")){
+						if (color.equals("blue")){ //clarify in case cmd includes light blue/blue
 							i = alex.hasColor("lightblue");
 							if (i.getX() != -1){
 								todo.add(0,"put down lightblue " + i.getShape());
@@ -633,26 +617,24 @@ public class ALExGUI {
 								record.append("~I'm not carrying anything " + color + ".\n");
 							}
 						}
-						record.append("~I'm not carrying anything " + color + ".\n");
+						record.append("~I'm not carrying anything " + color + ".\n"); //ALEx is not carrying an object of that color 
 					}
 					
 					
-				}else if(current.contains("put down")){
-					
-					//check if we have that, and if we do put it down
+				}else if(current.contains("put down")){ //cmd is put down  
 					String currentcopy = current.substring(current.indexOf(" ") + 1);
 					currentcopy = currentcopy.substring(currentcopy.indexOf(" ") + 1);
 					String color = currentcopy.substring(0, currentcopy.indexOf(" "));
 					String shape = currentcopy.substring(currentcopy.indexOf(" ") + 1);
 					
-					if (alex.hasItem(new Item(-1, -1, color, shape)) != -1){
-						if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){
+					if (alex.hasItem(new Item(-1, -1, color, shape)) != -1){ 
+						if (alex.getEnviron().getStuff()[ALExx][ALExy] != null){ //if there's already something at square in grid world 
 							record.append("~There's already something here.\n");
 						}else{
 							alex.putDown(new Item(-1,-1,color,shape));
 						}		
 					}else{
-						record.append("~I don't have a " + color + " " + shape + " to put down.\n");
+						record.append("~I don't have a " + color + " " + shape + " to put down.\n"); //if ALEx is not carrying certain object 
 					}
 					todo.remove(0);
 				}else if (current.equals("immediatepickup")){
