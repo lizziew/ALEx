@@ -207,6 +207,19 @@ public class ALEx{
 
 				System.out.println("color " + color);
 				System.out.println("shape " + shape);
+
+				//special cases: pick up, put down
+				for(int i = 0; i < processedwords.size(); i++) 
+					if(processedwords.get(i).equals("pick"))
+						for(int k = i; k < processedwords.size(); k++)
+							if(processedwords.get(k).equals("up"))
+								verb = "pick up"; 
+				
+				for(int i = 0; i < processedwords.size(); i++) 
+					if(processedwords.get(i).equals("put"))
+						for(int k = i; k < processedwords.size(); k++)
+							if(processedwords.get(k).equals("down"))
+								verb = "put down"; 
 			
 			if (shape.equals("crescent")){shape="moon";}
 
@@ -330,13 +343,11 @@ System.out.println("now looking for all light blue things");
 						}
 					}
 				}
-		
-
-//pokemon		
 
 				//if the verb is put down, send back put down + the color and shape
 				if (verb.equals("put down"))
 				{
+					System.out.println("Got here with dest " + dest);
 					if (all)
 					{
 						rtn = rtn + "!I can't do that...";
@@ -357,11 +368,8 @@ System.out.println("now looking for all light blue things");
 						}
 						else
 						{
-//kittyhawk
-							//put down the last thing in the backpack
-							String stuff = items.get(items.size()-1).toString();
-							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|immediateputdown"; // "|put down " + stuff;
-							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|immediateputdown");// "|put down " + stuff);
+							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|immediateputdown"; 
+							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|immediateputdown");
 						}
 					}
 					else if (!(color.equals("") || shape.equals(""))){
