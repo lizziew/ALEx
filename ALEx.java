@@ -129,7 +129,7 @@ public class ALEx{
 		
 		//then go through each clause and convert it to a command
 		for (int j = 0; j<clauses.size(); j++){
-			if (!(clauses.get(j).equals(" ")||clauses.get(j).contains(" no ") || clauses.get(j).contains(" not ") || clauses.get(j).contains("n't"))){
+			if (!(clauses.get(j).equals(" ")||clauses.get(j).contains(" no ") || clauses.get(j).contains(" not ") || clauses.get(j).contains("n't") || clauses.get(j).equals("and "))){
 				//^ignores blank clauses and clauses containing negatives
 				
 				if (!rtn.equals("")){
@@ -207,11 +207,6 @@ public class ALEx{
 
 				System.out.println("color " + color);
 				System.out.println("shape " + shape);
-				
-				if (hasPickUpVerb(processedwords))
-					verb = "pick up";
-				if (hasPutDownVerb(processedwords))
-					verb = "put down";
 			
 			if (shape.equals("crescent")){shape="moon";}
 
@@ -745,15 +740,19 @@ System.out.println("Added " + i + " " + j);
 		for (int i = 0; i<sentences.length; i++){
 			//split around and...
 			String[] ands = sentences[i].split("and");
-			
+	
 			//add the first one
-			prertn1.add(ands[0]);
+			if(!ands[0].equals(" ")) 
+				prertn1.add(ands[0]);
 			//we want the rest to start with 'and' still so the parser knows more easily to look back
 			for (int j = 1; j<ands.length; j++){
+				if(ands[j].equals(" ")) { 
+					continue; 
+				}
 				prertn1.add("and" + ands[j]);
 			}
 		}
-		
+
 		//then split around "then"
 		for (int i = 0; i<prertn1.size(); i++){
 			//split around then...
@@ -762,6 +761,8 @@ System.out.println("Added " + i + " " + j);
 			prertn2.add(thens[0]);
 			//we want the rest to start with 'then' still so the parser knows more easily to look back
 			for (int j = 1; j<thens.length; j++){
+				if(thens[j].equals(" "))
+					continue; 
 				prertn2.add("then" + thens[j]);
 			}
 		}
@@ -774,11 +775,14 @@ System.out.println("Added " + i + " " + j);
 			rtn.add(buts[0]);
 			//we want the rest to start with 'then' still so the parser knows more easily to look back
 			for (int j = 1; j<buts.length; j++){
+				if(buts[j].equals(" "))
+					continue; 
 				rtn.add("but" + buts[j]);
 			}
 		}
+
 		for (int i = 0; i<rtn.size(); i++){
-			System.out.println("clauses split " + rtn.get(i));
+			System.out.println("clauses split: " + rtn.get(i) + ".");
 		}
 		
 		return rtn;
