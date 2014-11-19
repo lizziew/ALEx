@@ -10,7 +10,6 @@ public class ALEx{
 
 	private ArrayList<Item> items = new ArrayList<Item>();
 
-	//ArrayLists of key words in ALEx's knowledge base 
 	private ArrayList<String> move_verbs;
 	private ArrayList<String> pickup_verbs;
 	private ArrayList<String> putdown_verbs;
@@ -28,6 +27,8 @@ public class ALEx{
 	private ArrayList<String> prevcommands;
 		
 	public ALEx (int dim) {
+
+	
 		pos_words = new ArrayList<String>(); 
 		pos_words.add("up"); 
 		pos_words.add("north"); 
@@ -74,6 +75,10 @@ public class ALEx{
 		pickup_verbs.add("transport");
 		pickup_verbs.add("move"); 
 		pickup_verbs.add("grab");
+
+		//need to account for "carry object from here to there"		
+		//also "send object from here to there"
+		//basically, the word "from" means we need to both pickup and putdown
 	
 		putdown_verbs = new ArrayList<String>();
 		putdown_verbs.add("putdown");
@@ -103,39 +108,38 @@ public class ALEx{
 		shapes.add("star");
 		shapes.add("triangle");
 
-		//saves cmds parsed from previous clauses
 		prevcommands = new ArrayList<String>();
 		
-		//ALEx starts at the origin 
 		x = 0;
 		y = 0; 
-
-		//initialize grid world with a given dimension
 		dimension = dim;
 		world = new Environment(dimension); 
 	}
 	
 	public String parseText(String s){
-		//the translated cmd to be sent to the GUI 
+		
 		String rtn = "";
+		
+		//convert string to lower case and get rid of punctuation; split around periods, "and", "then", ?, !
+
 		s=s.toLowerCase();
 
-		//split by clauses (periods, question marks, exclamation marks, 'but', 'then', 'and')
+
 		ArrayList<String> clauses = toClauses(s);
 		
 		//then go through each clause and convert it to a command
 		for (int j = 0; j<clauses.size(); j++){
 			if (!(clauses.get(j).equals(" ")||clauses.get(j).contains(" no ") || clauses.get(j).contains(" not ") || clauses.get(j).contains("n't") || clauses.get(j).equals("and "))){
-				//ignores blank clauses and clauses containing negatives and deals with the special case 'and then'
-				if (!rtn.equals(""))
+				//^ignores blank clauses and clauses containing negatives
+				
+				if (!rtn.equals("")){
 					rtn = rtn + "|";
-
+				}
+				
 				String[] words = clauses.get(j).split(" ");
 
-				//process the cmd (break it down into terms that ALEx understands). see the method 'processWords' for more details
 				ArrayList<String> processedwords = processWords(words);
 				
-				//figure out what the verb in the clause is 
 				String verb = "";
 				if (hasMoveVerb(processedwords))
 					verb = "move";
@@ -145,14 +149,14 @@ public class ALEx{
 					verb = "put down";
 
 			
-				boolean all = false; //cmd contains special keyword "all"
+				boolean all = false; //contains special keyword "all"
 				String color = "";
 				String shape = "";
-				Coord dest = null; //if cmd wants ALEx to get to a certain destination
-				String dir = ""; //if cmd wants ALEx to move in a certain direction 
-				int num_moves = 1; //if cmd wants ALEx to move in a certain direction some num of times
+				Coord dest = null;
+				String dir = "";
+
+				int num_moves = 1; 
 			
-				//extract info from processedwords (dest, num_moves, dir) and deals with special cases 
 				for (int i = 0; i<processedwords.size(); i++){
 					if (processedwords.get(i).equals("grey"))
 					{
@@ -160,18 +164,23 @@ public class ALEx{
 						processedwords.add(i, "gray");
 						color = processedwords.get(i);
 					}
-					if (colors.contains(processedwords.get(i)))
+					if (colors.contains(processedwords.get(i))){
 						color = processedwords.get(i);
+					}
 					if (isPlural(processedwords.get(i)))
+					{
 						shape = makeSingular(processedwords.get(i));
-					if (shapes.contains(processedwords.get(i)))
+					}	
+					if (shapes.contains(processedwords.get(i))){
 						shape = processedwords.get(i);
+					}
 					if(num_words.contains(processedwords.get(i))) {
 						processedwords.set(i, Integer.toString(num_words.indexOf(processedwords.get(i)))); 
 						num_moves = num_words.indexOf(processedwords.get(i)); 
 					}
-					if (processedwords.get(i).equals("all") || processedwords.get(i).equals("every") || processedwords.get(i).equals("each") || processedwords.get(i).equals("everything"))
+					if (processedwords.get(i).equals("all") || processedwords.get(i).equals("every") || processedwords.get(i).equals("each") || processedwords.get(i).equals("everything")){
 						all = true;
+					}
 					if (processedwords.get(i).contains("coord")){
 						String inputtext = processedwords.get(i);
 						inputtext = inputtext.substring(inputtext.indexOf(" ") + 1);
@@ -190,9 +199,10 @@ public class ALEx{
 						else
 							dir = "e";
 					}
-					if(processedwords.get(i).matches("[0-9]+")) 
+					if(processedwords.get(i).matches("[0-9]+")) //move down 2 squares 
 						num_moves = Integer.parseInt(processedwords.get(i)); 
 				}
+
 
 				//special cases: pick up, put down
 				for(int i = 0; i < processedwords.size(); i++) 
@@ -207,10 +217,9 @@ public class ALEx{
 							if(processedwords.get(k).equals("down"))
 								verb = "put down"; 
 			
-			//special case: crescent, moon
 			if (shape.equals("crescent")){shape="moon";}
 
-			//if the verb is move, send back to GUI the coords, or else the item, color, or shape provided
+			//if the verb is move, send back coords, or else the item, color, or shape provided
 			if (verb.equals("move")){
 				if (dest != null){													//destination provided
 					rtn = rtn + "move " + dest.getL() + " " + dest.getR();
@@ -244,26 +253,15 @@ public class ALEx{
 				
 			}
 			
-			//if verb is pick up, send back to GUI the object we're picking up, or coords
-			if (verb.equals("pick up"))
-			{
-				if (all) //if we want to pick up ALL objects with a certain characteristic 
+			
+		
+				//if verb is pick up, send back thing we're picking up, or coords
+				if (verb.equals("pick up"))
 				{
-					ArrayList<Coord> toGet = findItem(color, shape);
-					for (int i = 0; i < toGet.size(); i++)
+					if (all)
 					{
-						rtn = rtn + "pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR();
-						if (i != toGet.size()-1)
-							rtn = rtn + "|";
-						prevcommands.add("pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR());
-					}
-					if (color.equals("blue"))
-					{
-						color = "lightblue";
-						toGet.clear();
-						toGet = findItem(color, shape);
-						if (toGet.size() != 0)
-							rtn = rtn + "|";
+////////////////////////////////////////////////////geass
+						ArrayList<Coord> toGet = findItem(color, shape);
 						for (int i = 0; i < toGet.size(); i++)
 						{
 							rtn = rtn + "pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR();
@@ -271,237 +269,262 @@ public class ALEx{
 								rtn = rtn + "|";
 							prevcommands.add("pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR());
 						}
-					}
-					all = false;
-					return rtn;
-				}else if(dest != null){ //if ALEx wants to pick object at certain location 
-					rtn = rtn + "pick up loc " + dest.getL() + " " + dest.getR();				//"pick up loc" is for pickup at coordinates
-					prevcommands.add("pick up loc " + dest.getL() + " " + dest.getR());
-				}else if(!(color.equals("")||shape.equals(""))){ //if ALEx is given both the color and the shape of the object to pick up
-					rtn = rtn + "pick up " + color + " " + shape;
-					prevcommands.add("pick up " + color + " " + shape);
-					
-				}else if(!color.equals("")){ //if ALEx is to pick up all objects of a certain color (shape unspecified) 
-					rtn = rtn + "pick upc " + color;
-					prevcommands.add("pick upc " + color);
-
-				}else if(!shape.equals("")){ //if ALEx is to pick up all objects of a certain shape (color unspecified)
-					rtn = rtn + "pick ups " + shape;
-					prevcommands.add("pick ups" + shape);
-
-				}else{
-					int n = 1;
-					//iterate through previous commands to find an appropriate object to pick up
-					while (dest == null && color.equals("") && shape.equals("") && n<=prevcommands.size()){
-						String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
-						for (int i = 0; i<split.length; i++){
-							if (colors.contains(split[i])){
-								color = split[i];
-							}
-							if (shapes.contains(split[i])){
-								shape = split[i];
-							}
-							if (split[i].matches("[0-9]+") && i<split.length-1){
-								dest = new Coord(Integer.parseInt(split[i]),Integer.parseInt(split[i+1]));
+						if (color.equals("blue"))
+						{
+							color = "lightblue";
+							toGet.clear();
+							toGet = findItem(color, shape);
+							if (toGet.size() != 0)
+								rtn = rtn + "|";
+							for (int i = 0; i < toGet.size(); i++)
+							{
+								rtn = rtn + "pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR();
+								if (i != toGet.size()-1)
+									rtn = rtn + "|";
+								prevcommands.add("pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR());
 							}
 						}
-						n++;
-					}
-					if (!(color.equals("") || shape.equals(""))){
-						if (shape.equals("crescent")){shape = "moon";}
-						rtn = rtn + "pick up " + color + " " + shape;
-						prevcommands.add("pick up " + color + " " + shape);
-					}else if (dest != null){
-						rtn = rtn + "pick up loc " + dest.getL() + " " + dest.getR();
+						all = false;
+						return rtn;
+					}else if(dest != null){
+						rtn = rtn + "pick up loc " + dest.getL() + " " + dest.getR();				//"pick up loc" is for pickup at coordinates
 						prevcommands.add("pick up loc " + dest.getL() + " " + dest.getR());
-					}else{
-						rtn = rtn + "tryimmediatepickup";
-						prevcommands.add("tryimmediatepickup");
-					}
-				}
-			}
-
-			//if the verb is put down, send back put down + the color and shape
-			if (verb.equals("put down"))
-			{
-				if (all) //ALEx is not able to put down all objects in its backpack
-				{
-					rtn = rtn + "!I can't do that...";
-					prevcommands.add("!I can't do that...");
-				}
-				else if (dest != null) //if ALEx is given a location to put down an object at 
-				{
-					if(!(color.equals("") || shape.equals(""))) //if cmd specifies both color and shape of object to put down
-					{
-						rtn = rtn + "move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape; 
-						prevcommands.add("move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape);
-					}else if(!color.equals("")){ //if cmd only specifies the color of object to put down
-						rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|put downc " + color;
-						prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|put downc " + color);
-					}else if(!shape.equals("")){ //if cmd only specifies the shape of object to put down
-						rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|put downs " + shape;
-						prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|put downs " + shape);
-					}
-					else{ //put down the last object
-						rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|immediateputdown"; 
-						prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|immediateputdown");
-					}
-				}
-				else if (!(color.equals("") || shape.equals(""))){ //put down at current location object with given color and shape
-					rtn = rtn + "put down " + color + " " + shape;
-					prevcommands.add("put down " + color + " " + shape);
-				}else if(!color.equals("")){ //put down at current location object with given color
-					rtn = rtn + "put downc " + color;
-					prevcommands.add("put downc " + color);
-				}else if(!shape.equals("")){ //put down at current location object with given shape 
-					rtn = rtn + "put downs " + shape;
-					prevcommands.add("put downs " + shape);
-				}else{
-					int n = 1;
-					//iterate through previous commands to find an appropriate object
-					while (color.equals("") && shape.equals("") && n<=prevcommands.size()){
-						String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
-						for (int i = 0; i<split.length; i++){
-							if (colors.contains(split[i])){
-								color = split[i];
-							}
-							if (shapes.contains(split[i])){
-								shape = split[i];
-							}
-						}
-						n++;
-					}
-					if (!(color.equals("") || shape.equals(""))){
-						if (shape.equals("crescent")){shape = "moon";}
-						rtn = rtn + "put down " + color + " " + shape;
-						prevcommands.add("put down " + color + " " + shape);
-					}else{ //if there still isn't anything, put down whatever you're holding
-						rtn = rtn + "immediateputdown";
-						prevcommands.add("immediateputdown");
-					}
-				}
-			}
-				
-			if (verb.equals("") && !(color.equals("")||shape.equals(""))){ //specified color and shape, but no verb given
-				int n = 1;
-				//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
-				while (verb.equals("") && n<=prevcommands.size()){
-					String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
-					
-					for (int i = 0; i<split.length; i++){
-						if (split[i].equals("put")){ //(we're only dealing with the nice processed commands that get sent to gui, so we can assume put -> put down)
-							verb = "put down";
-						}
-						if (split[i].equals("move") || split[i].equals("moveto") || split[i].equals("movetos") || split[i].equals("movetoc")){
-							verb = "moveto"; //we know the destination is an item, and putting move instead of moveto saves us the substitution that would otherwise occur later
-						}
-						if (split[i].equals("pick")){ //same for pick as put - we know "up" is also there, since this is a string we constructed earlier
-							verb = "pick up";
-						}
-					}
-					n++;
-				}
-				if(!verb.equals("")){
-					rtn = rtn + verb + " " + color + " " + shape;
-					prevcommands.add(verb + " " + color + " " + shape);
-				}
-			}else if(verb.equals("") && !color.equals("") && shape.equals("")){	//only a color
-				//first find a verb
-				int n = 1;
-				//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
-				while (verb.equals("") && n<=prevcommands.size()){
-					String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
-					
-					for (int i = 0; i<split.length; i++){
-						if (split[i].equals("put")){		//(we're only dealing with the nice processed commands that get sent to gui, so we can assume put -> put down)
-							verb = "put down";
-						}
-						if (split[i].equals("move") || split[i].equals("moveto") || split[i].equals("movetos") || split[i].equals("movetoc")){
-							verb = "moveto";				//we know the destination is an item, and putting move instead of moveto saves us the substitution that would otherwise occur later
-						}
-						if (split[i].equals("pick")){ 		//same for pick as put - we know "up" is also there, since this is a string we constructed earlier
-							verb = "pick up";
-						}
-					}
-					n++;
-				}
-				//then a shape
-				int m = 1;
-				while (shape.equals("") && m<=prevcommands.size()){
-					String[] split = prevcommands.get(prevcommands.size()-m).split(" ");
-					for (int i = 0; i<split.length; i++){
-						if (shapes.contains(split[i])){
-							shape = split[i];
-						}
-					}
-					m++;
-				}
-				
-				if (!(verb.equals("")||color.equals("")||shape.equals(""))){ 	//all three things, yay
-					if (verb.equals("moveto")){
-						rtn = rtn + "moveto " + color + " " + shape; 
-						prevcommands.add("moveto " + color + " " + shape);
-					}
-					if (verb.equals("put down")){
-						rtn = rtn + "put down " + color + " " + shape;
-						prevcommands.add("put down " + color + " " + shape);
-					}
-					if (verb.equals("pick up")){
+					}else if(!(color.equals("")||shape.equals(""))){
+						
 						rtn = rtn + "pick up " + color + " " + shape;
 						prevcommands.add("pick up " + color + " " + shape);
-					}		
-				}else if(!verb.equals("")&&!color.equals("")&&shape.equals("")){	//still just a color and verb
-					if (verb.equals("moveto")){
-						rtn = rtn + "movetoc " + color;
-						prevcommands.add("movetoc " + color);
-					}
-					if (verb.equals("put down")){
-						rtn = rtn + "put downc " + color;
-						prevcommands.add("put downc " + color);
-					}
-					if (verb.equals("pick up")){
+						
+					}else if(!color.equals("")){
+
 						rtn = rtn + "pick upc " + color;
 						prevcommands.add("pick upc " + color);
-					}	
-				}else{																//otherwise (just a color) 
-					rtn = rtn + "unknown";
-					prevcommands.add(color);
+
+					}else if(!shape.equals("")){
+							
+								rtn = rtn + "pick ups " + shape;
+								prevcommands.add("pick ups" + shape);
+
+					}else{
+						int n = 1;
+						//iterate through previous commands to find an appropriate object
+						while (dest == null && color.equals("") && shape.equals("") && n<=prevcommands.size()){
+							String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
+							for (int i = 0; i<split.length; i++){
+								if (colors.contains(split[i])){
+									color = split[i];
+								}
+								if (shapes.contains(split[i])){
+									shape = split[i];
+								}
+								if (split[i].matches("[0-9]+") && i<split.length-1){
+									dest = new Coord(Integer.parseInt(split[i]),Integer.parseInt(split[i+1]));
+								}
+							}
+							n++;
+						}
+						if (!(color.equals("") || shape.equals(""))){
+							if (shape.equals("crescent")){shape = "moon";}
+							rtn = rtn + "pick up " + color + " " + shape;
+							prevcommands.add("pick up " + color + " " + shape);
+						}else if (dest != null){
+							rtn = rtn + "pick up loc " + dest.getL() + " " + dest.getR();
+							prevcommands.add("pick up loc " + dest.getL() + " " + dest.getR());
+						}else{
+							rtn = rtn + "tryimmediatepickup";
+							prevcommands.add("tryimmediatepickup");
+						}
+					}
 				}
-					
-			}else if(verb.equals("") && color.equals("") && !shape.equals("")){	//only a shape
-				//first find a verb
-				int n = 1;
+
+				//if the verb is put down, send back put down + the color and shape
+				if (verb.equals("put down"))
+				{
+					if (all)
+					{
+						rtn = rtn + "!I can't do that...";
+						prevcommands.add("!I can't do that...");
+					}
+					else if (dest != null)
+					{
+						if(!(color.equals("") || shape.equals("")))
+						{
+							rtn = rtn + "move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape; 
+							prevcommands.add("move " +  dest.getL() + " " + dest.getR() + "|put down " + color + " " + shape);
+						}else if(!color.equals("")){
+							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|put downc " + color;
+							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|put downc " + color);
+						}else if(!shape.equals("")){
+							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|put downs " + shape;
+							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|put downs " + shape);
+						}
+						else
+						{
+							rtn = rtn + "move " + dest.getL() + " " + dest.getR() + "|immediateputdown"; 
+							prevcommands.add("move " + dest.getL() + " " + dest.getR() + "|immediateputdown");
+						}
+					}
+					else if (!(color.equals("") || shape.equals(""))){
+						rtn = rtn + "put down " + color + " " + shape;
+						prevcommands.add("put down " + color + " " + shape);
+					}else if(!color.equals("")){
+						rtn = rtn + "put downc " + color;
+						prevcommands.add("put downc " + color);
+					}else if(!shape.equals("")){
+						rtn = rtn + "put downs " + shape;
+						prevcommands.add("put downs " + shape);
+					}else{
+						int n = 1;
+						//iterate through previous commands to find an appropriate object
+						while (color.equals("") && shape.equals("") && n<=prevcommands.size()){
+							String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
+							for (int i = 0; i<split.length; i++){
+								if (colors.contains(split[i])){
+									color = split[i];
+								}
+								if (shapes.contains(split[i])){
+									shape = split[i];
+								}
+							}
+							n++;
+						}
+						if (!(color.equals("") || shape.equals(""))){
+							if (shape.equals("crescent")){shape = "moon";}
+							rtn = rtn + "put down " + color + " " + shape;
+							prevcommands.add("put down " + color + " " + shape);
+						}else{ //if there still isn't anything, put down whatever you're holding
+							rtn = rtn + "immediateputdown";
+							prevcommands.add("immediateputdown");
+						}
+					}
+				}
 				
-				//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
-				while (verb.equals("") && n<=prevcommands.size()){
-					
-					
-					String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
-					
-					for (int i = 0; i<split.length; i++){
-						if (split[i].equals("put")){		//(we're only dealing with the nice processed commands that get sent to gui, so we can assume put -> put down)
-							verb = "put down";
+				
+				
+				
+				if (verb.equals("") && !(color.equals("")||shape.equals(""))){ //a color and shape, but not a verb
+					int n = 1;
+					//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
+					while (verb.equals("") && n<=prevcommands.size()){
+						String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
+						
+						for (int i = 0; i<split.length; i++){
+							if (split[i].equals("put")){		//(we're only dealing with the nice processed commands that get sent to gui, so we can assume put -> put down)
+								verb = "put down";
+							}
+							if (split[i].equals("move") || split[i].equals("moveto") || split[i].equals("movetos") || split[i].equals("movetoc")){
+								verb = "moveto";				//we know the destination is an item, and putting move instead of moveto saves us the substitution that would otherwise occur later
+							}
+							if (split[i].equals("pick")){ 		//same for pick as put - we know "up" is also there, since this is a string we constructed earlier
+								verb = "pick up";
+							}
 						}
-						if (split[i].equals("move") || split[i].equals("moveto")|| split[i].equals("movetoc")|| split[i].equals("movetos")){
-							verb = "moveto";				//we know the destination is an item, and putting move instead of moveto saves us the substitution that would otherwise occur later
-						}
-						if (split[i].equals("pick")){ 		//same for pick as put - we know "up" is also there, since this is a string we constructed earlier
-							verb = "pick up";
-						}
+						n++;
 					}
-					n++;
-				}
-				//then a color
-				int m = 1;
-				while (color.equals("") && m<=prevcommands.size()){
-					String[] split = prevcommands.get(prevcommands.size()-m).split(" ");
-					for (int i = 0; i<split.length; i++){
-						if (colors.contains(split[i])){
-							color = split[i];
-						}
+					if(!verb.equals("")){
+						rtn = rtn + verb + " " + color + " " + shape;
+						prevcommands.add(verb + " " + color + " " + shape);
 					}
-					m++;
-				}
+				}else if(verb.equals("") && !color.equals("") && shape.equals("")){	//only a color
+					//first find a verb
+					int n = 1;
+					//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
+					while (verb.equals("") && n<=prevcommands.size()){
+						String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
+						
+						for (int i = 0; i<split.length; i++){
+							if (split[i].equals("put")){		//(we're only dealing with the nice processed commands that get sent to 
+								verb = "put down";				//gui, so we can assume put -> put down)
+							}
+							if (split[i].equals("move") || split[i].equals("moveto") || split[i].equals("movetos") || split[i].equals("movetoc")){
+								verb = "moveto";				//we know the destination is an item, and putting move instead of moveto saves us the 
+																//substitution that would otherwise occur later
+							}									
+							if (split[i].equals("pick")){ 		//same for pick as put - we know "up" is also there, since this is a string we constructed earlier
+								verb = "pick up";
+							}
+						}
+						n++;
+					}
+					//then a shape
+					int m = 1;
+					while (shape.equals("") && m<=prevcommands.size()){
+						String[] split = prevcommands.get(prevcommands.size()-m).split(" ");
+						for (int i = 0; i<split.length; i++){
+							if (shapes.contains(split[i])){
+								shape = split[i];
+							}
+						}
+						m++;
+					}
+					
+					if (!(verb.equals("")||color.equals("")||shape.equals(""))){ 	//all three things, yay
+						if (verb.equals("moveto")){
+							rtn = rtn + "moveto " + color + " " + shape; 
+							prevcommands.add("moveto " + color + " " + shape);
+						}
+						if (verb.equals("put down")){
+							rtn = rtn + "put down " + color + " " + shape;
+							prevcommands.add("put down " + color + " " + shape);
+						}
+						if (verb.equals("pick up")){
+							rtn = rtn + "pick up " + color + " " + shape;
+							prevcommands.add("pick up " + color + " " + shape);
+						}		
+					}else if(!verb.equals("")&&!color.equals("")&&shape.equals("")){	//still just a color and verb
+						if (verb.equals("moveto")){
+							rtn = rtn + "movetoc " + color;
+							prevcommands.add("movetoc " + color);
+						}
+						if (verb.equals("put down")){
+							rtn = rtn + "put downc " + color;
+							prevcommands.add("put downc " + color);
+						}
+						if (verb.equals("pick up")){
+							rtn = rtn + "pick upc " + color;
+							prevcommands.add("pick upc " + color);
+						}	
+					}else{																//otherwise (just a color) 
+						rtn = rtn + "unknown";
+						prevcommands.add(color);
+					}
+						
+				}else if(verb.equals("") && color.equals("") && !shape.equals("")){	//only a shape
+
+					//first find a verb
+					int n = 1;
+				
+
+					
+					//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
+					while (verb.equals("") && n<=prevcommands.size()){
+						
+						
+						String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
+						
+						for (int i = 0; i<split.length; i++){
+							if (split[i].equals("put")){		//(we're only dealing with the nice processed commands that get sent to gui, so we can assume put -> put down)
+								verb = "put down";
+							}
+							if (split[i].equals("move") || split[i].equals("moveto")|| split[i].equals("movetoc")|| split[i].equals("movetos")){
+								verb = "moveto";				//we know the destination is an item, and putting move instead of moveto saves us the substitution that would otherwise occur later
+							}
+							if (split[i].equals("pick")){ 		//same for pick as put - we know "up" is also there, since this is a string we constructed earlier
+								verb = "pick up";
+							}
+						}
+						n++;
+					}
+					//then a color
+					int m = 1;
+					while (color.equals("") && m<=prevcommands.size()){
+						String[] split = prevcommands.get(prevcommands.size()-m).split(" ");
+						for (int i = 0; i<split.length; i++){
+							if (colors.contains(split[i])){
+								color = split[i];
+							}
+						}
+						m++;
+					}
 					
 					if (!(verb.equals("")||color.equals("")||shape.equals(""))){ 	//all three things, yay
 						if (verb.equals("moveto")){
@@ -580,7 +603,6 @@ public class ALEx{
 	{
 		String command = prevcommands.get(prevcommands.size()-1);
 		String[] cmd = command.split("[ ]");
-System.out.println("   Currently finding ambiguous item " );
 
 		//color and shape
 		String c = "";
@@ -598,6 +620,7 @@ System.out.println("   Currently finding ambiguous item " );
 	}
 
 //stupid plurals...
+//turns "squares" into "square"
 	public boolean isPlural(String s)
 	{
 		for (int i = 0; i < def_shapes.length; i++)
@@ -620,7 +643,8 @@ System.out.println("   Currently finding ambiguous item " );
 		}
 		return null;
 	}
-	
+//finds all items of certain colors and shapes
+	//if no color or shape specified, returns locations of all items
 	public ArrayList<Coord> findItem(String color, String shape){
 		ArrayList<Coord> rtn = new ArrayList<Coord>();
 
@@ -639,9 +663,9 @@ System.out.println("   Currently finding ambiguous item " );
 			return rtn;
 		}
 		if(color == "") {
-System.out.println("Color is blank. Searching for all " + shape + "s ...");
+
 			rtn = findShapeItem(shape);
-System.out.println("  Found " + shape + ": " + rtn);
+
 			return rtn; 
 		}
 		if(shape == "") {
@@ -681,7 +705,7 @@ System.out.println("  Found " + shape + ": " + rtn);
 			for (int j=0; j<dimension; j++){
 				if (world.getStuff()[i][j] != null && world.getStuff()[i][j].getShape().equals(s)){
 					rtn.add(new Coord(i,j));
-System.out.println("Added " + i + " " + j);
+
 				}
 			}
 		}
@@ -716,7 +740,6 @@ System.out.println("Added " + i + " " + j);
 			//add the first one
 			if(!ands[0].equals(" ")) 
 				prertn1.add(ands[0]);
-			//we want the rest to start with 'and' still so the parser knows more easily to look back
 			for (int j = 1; j<ands.length; j++){
 				if(ands[j].equals(" ")) { 
 					continue; 
@@ -731,7 +754,6 @@ System.out.println("Added " + i + " " + j);
 			String[] thens = prertn1.get(i).split("then");
 			//add the first one
 			prertn2.add(thens[0]);
-			//we want the rest to start with 'then' still so the parser knows more easily to look back
 			for (int j = 1; j<thens.length; j++){
 				if(thens[j].equals(" "))
 					continue; 
@@ -745,7 +767,6 @@ System.out.println("Added " + i + " " + j);
 			String[] buts = prertn2.get(i).split("but");
 			//add the first one
 			rtn.add(buts[0]);
-			//we want the rest to start with 'then' still so the parser knows more easily to look back
 			for (int j = 1; j<buts.length; j++){
 				if(buts[j].equals(" "))
 					continue; 
@@ -753,13 +774,11 @@ System.out.println("Added " + i + " " + j);
 			}
 		}
 
-		for (int i = 0; i<rtn.size(); i++){
-			System.out.println("clauses split: " + rtn.get(i) + ".");
-		}
+
 		
 		return rtn;
 	}
-	
+//turns command into something we can deal with more easily
 	private ArrayList<String> processWords(String[] words) {
 		ArrayList<String> processedwords = new ArrayList<String>(); 
 
@@ -870,14 +889,11 @@ System.out.println("Added " + i + " " + j);
 	}
 
 	public boolean pickUp() { //pick up item in environment 
-		//moveTo(x,y);
 		if(world.stuff[x][y] == null)
 		{
-			System.out.println("There's nothing here!!!");
 			return false;
 		}
 		items.add(world.removeItem(x,y));
-		System.out.println("Got something!");	
 		return true; 
 	}
 
@@ -886,7 +902,6 @@ System.out.println("Added " + i + " " + j);
 		if(i != -1) {
 			items.get(i).setCarried(false); 
 			if(this.world.stuff[this.x][this.y] != null) {
-				System.out.println("ERROR: item already at " + this.x + ", " + this.y + ".");
 				return false; 
 			}
 			this.world.addItem(this.x, this.y, items.get(i));
