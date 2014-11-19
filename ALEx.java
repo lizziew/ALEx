@@ -265,11 +265,15 @@ public class ALEx{
 								rtn = rtn + "|";
 							prevcommands.add("pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR());
 						}
+System.out.println(color);
 						if (color.equals("blue"))
 						{
-							color = "light blue";
+System.out.println("now looking for all light blue things");
+							color = "lightblue";
 							toGet.clear();
 							toGet = findItem(color, shape);
+							if (toGet.size() != 0)
+								rtn = rtn + "|";
 							for (int i = 0; i < toGet.size(); i++)
 							{
 								rtn = rtn + "pick up loc " + toGet.get(i).getL() + " " + toGet.get(i).getR();
