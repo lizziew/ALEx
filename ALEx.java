@@ -295,7 +295,6 @@ public class ALEx{
 					while (dest == null && color.equals("") && shape.equals("") && n<=prevcommands.size()){
 						String[] split = prevcommands.get(prevcommands.size()-n).split(" ");
 						for (int i = 0; i<split.length; i++){
-							System.out.println("split " + split[i]);
 							if (colors.contains(split[i])){
 								color = split[i];
 							}
@@ -303,7 +302,6 @@ public class ALEx{
 								shape = split[i];
 							}
 							if (split[i].matches("[0-9]+") && i<split.length-1){
-								System.out.println("bbb");
 								dest = new Coord(Integer.parseInt(split[i]),Integer.parseInt(split[i+1]));
 							}
 						}
@@ -471,13 +469,8 @@ public class ALEx{
 				}
 					
 			}else if(verb.equals("") && color.equals("") && !shape.equals("")){	//only a shape
-				System.out.println("only shape");
 				//first find a verb
 				int n = 1;
-			
-				for (int q = 0; q<prevcommands.size(); q++){
-					System.out.println("prevcommands " + q + " " + prevcommands.get(q));
-				}
 				
 				//iterate through previous commands to find an appropriate verb, since we have an object but not a verb
 				while (verb.equals("") && n<=prevcommands.size()){
@@ -498,7 +491,6 @@ public class ALEx{
 					}
 					n++;
 				}
-				System.out.println("only shape verb found " + verb);
 				//then a color
 				int m = 1;
 				while (color.equals("") && m<=prevcommands.size()){
@@ -510,7 +502,6 @@ public class ALEx{
 					}
 					m++;
 				}
-					System.out.println("only shape color found " + color);
 					
 					if (!(verb.equals("")||color.equals("")||shape.equals(""))){ 	//all three things, yay
 						if (verb.equals("moveto")){
@@ -580,7 +571,6 @@ public class ALEx{
 			}	
 		}
 		
-		System.out.println("Here's what's being sent to GUI: " + rtn);
 		return rtn;
 	}
 
